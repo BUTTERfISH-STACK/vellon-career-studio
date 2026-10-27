@@ -1,55 +1,31 @@
 import { useEffect, useState } from 'react'
 import { jsPDF } from 'jspdf'
 import {
-  Award, Check, ChevronRight, Crown, Download,
-  Eye, FileText, LayoutTemplate, Mail, Palette, Plus, RotateCcw,
-  ShieldCheck, Sparkles, Trash2, UserRound
+  ArrowRight, Check, Crown, Download, FileText, LayoutDashboard,
+  Mail, Palette, Plus, RotateCcw, ShieldCheck, Trash2, UserRound
 } from 'lucide-react'
+import './VellonPass.css'
 
-const GOLD = [193, 157, 83]
-const DARK = [12, 12, 12]
-const IVORY = [247, 244, 236]
-const STORAGE_KEY = 'vellon-pass-draft-v1'
+const STORAGE_KEY = 'vellon-pass-draft-v2'
 
 const themes = {
   obsidian: {
-    label: 'Obsidian Luxury',
-    paper: DARK,
-    text: IVORY,
-    accent: GOLD,
-    muted: [190, 181, 161],
-    panel: [24, 23, 20]
+    label: 'Obsidian',
+    paper: [13, 13, 13],
+    text: [245, 241, 231],
+    accent: [216, 181, 107],
+    muted: [174, 166, 149]
   },
   ivory: {
-    label: 'Ivory Editorial',
-    paper: [251, 249, 244],
-    text: [36, 34, 30],
-    accent: [145, 111, 47],
-    muted: [105, 99, 88],
-    panel: [239, 234, 222]
+    label: 'Ivory',
+    paper: [250, 247, 239],
+    text: [37, 34, 29],
+    accent: [145, 108, 43],
+    muted: [105, 99, 88]
   }
 }
 
-const today = () => new Date().toLocaleDateString('en-ZA', {
-  day: 'numeric', month: 'long', year: 'numeric'
-})
-
-const makeId = () => `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
-
-function cleanName(value) {
-  return String(value || 'Candidate').trim()
-    .replace(/[^a-z0-9_-]+/gi, '-').slice(0, 55) || 'Candidate'
-}
-
-function makeExperience(items = []) {
-  return items.map(item => ({
-    id: item.id || makeId(),
-    role: item.role || '',
-    company: item.company || '',
-    dates: item.dates || '',
-    details: item.details || ''
-  }))
-}
+const newId = () => `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
 
 function seedCV(form = {}) {
   return {
@@ -61,690 +37,435 @@ function seedCV(form = {}) {
     summary: form.summary || '',
     skills: form.skills || '',
     education: form.education || '',
-    experience: makeExperience(form.experience || [])
+    experience: Array.isArray(form.experience)
+      ? form.experience.map(job => ({
+          id: job.id || newId(),
+          role: job.role || '',
+          company: job.company || '',
+          dates: job.dates || '',
+          details: job.details || ''
+        }))
+      : []
   }
 }
 
-function buildLetter(cv, letter) {
-  if (letter.body.trim()) return letter.body.trim()
+function loadDraft(form) {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null')
+    if (saved?.version === 2 && saved.cv && typeof saved.cv === 'object') {
+      return {
+        cv: { ...seedCV(form), ...saved.cv,
+          experience: Array.isArray(saved.cv.experience) ? saved.cv.experience : [] },
+        letter: saved.letter || {},
+        settings: saved.settings || {}
+      }
+    }
+  } catch {
+    // Invalid or unavailable local storage must not prevent the editor opening.
+  }
+  return { cv: seedCV(form), letter: {}, settings: {} }
+}
 
-  const greeting = letter.recipient.trim()
-    ? `Dear ${letter.recipient.trim()},`
-    : 'Dear Hiring Manager,'
+function suggestedLetter(cv, letter) {
+  if (letter.body?.trim()) return letter.body.trim()
 
   return [
-    greeting,
+    `Dear ${letter.recipient?.trim() || 'Hiring Manager'},`,
     '',
-    `I am writing to apply for the ${letter.role.trim() || cv.title.trim() || 'available position'}${letter.company.trim() ? ` at ${letter.company.trim()}` : ''}.`,
+    `I am writing to apply for the ${letter.role?.trim() || cv.title?.trim() || 'position'}${letter.company?.trim() ? ` at ${letter.company.trim()}` : ''}.`,
     '',
-    cv.summary.trim() || 'I am a motivated professional who values reliability, continuous learning, and contributing positively to a team.',
+    cv.summary?.trim() || 'I am interested in contributing my skills, experience, and commitment to your team.',
     '',
-    cv.skills.trim()
-      ? `My relevant skills include ${cv.skills.trim()}.`
-      : 'I would welcome the opportunity to discuss how my experience and strengths could contribute to your organization.',
+    cv.skills?.trim() ? `My relevant skills include ${cv.skills.trim()}.` : 'I would welcome the opportunity to discuss my suitability for this position.',
     '',
-    'Thank you for considering my application. I would appreciate the opportunity to discuss my suitability for the role.',
+    'Thank you for considering my application. I look forward to the opportunity to discuss my application with you.',
     '',
     'Kind regards,',
-    cv.name.trim() || '[Your name]'
+    cv.name?.trim() || '[Your name]'
   ].join('\n')
 }
 
-function drawPDFHeader(doc, cv, theme, subtitle) {
-  const pageW = doc.internal.pageSize.getWidth()
-  const pageH = doc.internal.pageSize.getHeight()
-  const margin = 18
-  const colors = themes[theme] || themes.obsidian
-
-  doc.setFillColor(...colors.paper)
-  doc.rect(0, 0, pageW, pageH, 'F')
-
-  if (theme === 'obsidian') {
-    doc.setDrawColor(...colors.accent)
-    doc.setLineWidth(0.45)
-    doc.rect(7, 7, pageW - 14, pageH - 14)
-  }
-
-  doc.setTextColor(...colors.accent)
-  doc.setFont('helvetica', 'bold')
-  doc.setFontSize(9)
-  doc.text('VÉLLON  /  PASS', margin, 17)
-
-  doc.setFont('helvetica', 'normal')
-  doc.setFontSize(7)
-  doc.text(subtitle.toUpperCase(), pageW - margin, 17, { align: 'right' })
-
-  doc.setDrawColor(...colors.accent)
-  doc.setLineWidth(0.5)
-  doc.line(margin, 22, pageW - margin, 22)
-
-  return { pageW, pageH, margin, colors }
-}
-
-function drawFooter(doc, page, colors, margin) {
-  const pageW = doc.internal.pageSize.getWidth()
-  const pageH = doc.internal.pageSize.getHeight()
-
-  doc.setDrawColor(...colors.accent)
-  doc.setLineWidth(0.3)
-  doc.line(margin, pageH - 16, pageW - margin, pageH - 16)
-  doc.setTextColor(...colors.muted)
-  doc.setFont('helvetica', 'normal')
-  doc.setFontSize(7)
-  doc.text('VÉLLON PASS  ·  PROFESSIONAL APPLICATION', margin, pageH - 10)
-  doc.text(String(page), pageW - margin, pageH - 10, { align: 'right' })
-}
-
-function exportCV(cv, settings) {
-  if (!cv.name.trim()) {
-    window.alert('Enter your name in the PASS CV editor before exporting.')
-    return
-  }
-
-  const doc = new jsPDF({ format: 'a4', unit: 'mm' })
-  const { pageW, pageH, margin, colors } =
-    drawPDFHeader(doc, cv, settings.theme, 'Premium curriculum vitae')
-
-  const width = pageW - margin * 2
-  const bottom = pageH - 23
-  let page = 1
-  let y = 33
-
-  const newPage = () => {
-    drawFooter(doc, page, colors, margin)
-    doc.addPage()
-    page += 1
-    drawPDFHeader(doc, cv, settings.theme, 'Curriculum vitae · continued')
-    y = 31
-  }
-
-  const ensureSpace = (height) => {
-    if (y + height > bottom) newPage()
-  }
-
-  const wrapped = (value, size, widthLimit = width) => {
-    doc.setFontSize(size)
-    return doc.splitTextToSize(String(value || ''), widthLimit)
-  }
-
-  const writeSection = (heading, body) => {
-    if (!String(body || '').trim()) return
-    ensureSpace(17)
-
-    doc.setTextColor(...colors.accent)
-    doc.setFont('helvetica', 'bold')
-    doc.setFontSize(10)
-    doc.text(heading.toUpperCase(), margin, y)
-    y += 3
-
-    doc.setDrawColor(...colors.accent)
-    doc.setLineWidth(0.25)
-    doc.line(margin, y, pageW - margin, y)
-    y += 6
-
-    doc.setTextColor(...colors.text)
-    doc.setFont('helvetica', 'normal')
-    doc.setFontSize(settings.fontSize)
-    const lines = wrapped(body, settings.fontSize)
-
-    for (const line of lines) {
-      if (y + settings.lineHeight > bottom) newPage()
-      doc.text(line, margin, y)
-      y += settings.lineHeight
-    }
-    y += settings.spacing
-  }
-
-  doc.setTextColor(...colors.accent)
-  doc.setFont('helvetica', 'bold')
-  doc.setFontSize(22)
-  const nameLines = wrapped(cv.name, 22, width - 24)
-  for (const line of nameLines) {
-    ensureSpace(10)
-    doc.text(line, margin, y)
-    y += 9
-  }
-
-  doc.setTextColor(...colors.text)
-  doc.setFont('helvetica', 'normal')
-  doc.setFontSize(11)
-  const headline = wrapped(cv.title || 'Professional Profile', 11, width)
-  headline.forEach(line => {
-    ensureSpace(7)
-    doc.text(line, margin, y)
-    y += 6
-  })
-  y += 2
-
-  const contact = [cv.email, cv.phone, cv.location].filter(Boolean).join('  |  ')
-  if (contact) {
-    doc.setTextColor(...colors.muted)
-    doc.setFontSize(8)
-    const lines = wrapped(contact, 8)
-    lines.forEach(line => {
-      ensureSpace(5)
-      doc.text(line, margin, y)
-      y += 4
-    })
-  }
-  y += 5
-
-  writeSection('Professional Profile', cv.summary)
-  writeSection('Core Skills', cv.skills)
-
-  for (const job of cv.experience.filter(item =>
-    [item.role, item.company, item.dates, item.details].some(value => String(value || '').trim())
-  )) {
-    const description = [
-      [job.role, job.company].filter(Boolean).join(' — '),
-      job.dates,
-      job.details
-    ].filter(Boolean).join('\n')
-    writeSection('Professional Experience', description)
-  }
-
-  writeSection('Education & Qualifications', cv.education)
-  drawFooter(doc, page, colors, margin)
-  doc.save(`${cleanName(cv.name)}-Vellon-PASS-CV.pdf`)
-}
-
-function exportLetter(cv, letter, settings) {
-  if (!cv.name.trim()) {
-    window.alert('Enter your name in the PASS CV editor before exporting.')
-    return
-  }
-
-  const doc = new jsPDF({ format: 'a4', unit: 'mm' })
-  const { pageW, pageH, margin, colors } =
-    drawPDFHeader(doc, cv, settings.theme, 'Professional cover letter')
-
-  const width = pageW - margin * 2
-  const bottom = pageH - 23
-  let page = 1
-  let y = 34
-
-  const nextPage = () => {
-    drawFooter(doc, page, colors, margin)
-    doc.addPage()
-    page += 1
-    drawPDFHeader(doc, cv, settings.theme, 'Cover letter · continued')
-    y = 32
-  }
-
-  const writeLines = (text, fontSize, lineHeight, gap = 0) => {
-    doc.setFontSize(fontSize)
-    const lines = doc.splitTextToSize(String(text || ''), width)
-    for (const line of lines) {
-      if (y + lineHeight > bottom) nextPage()
-      doc.text(line, margin, y)
-      y += lineHeight
-    }
-    y += gap
-  }
-
-  doc.setTextColor(...colors.accent)
-  doc.setFont('helvetica', 'bold')
-  doc.setFontSize(19)
-  writeLines(cv.name, 19, 9, 1)
-
-  doc.setTextColor(...colors.text)
-  doc.setFont('helvetica', 'normal')
-  doc.setFontSize(9)
-  writeLines([cv.title, cv.email, cv.phone, cv.location].filter(Boolean).join('  ·  '), 9, 5, 8)
-
-  doc.setTextColor(...colors.muted)
-  writeLines(letter.date, 9, 5, 7)
-
-  doc.setTextColor(...colors.text)
-  const recipient = [
-    letter.recipient,
-    letter.company,
-    letter.role ? `Re: ${letter.role}` : ''
-  ].filter(Boolean).join('\n')
-  if (recipient) writeLines(recipient, 10, 5.5, 7)
-
-  doc.setFont('helvetica', 'normal')
-  doc.setFontSize(10)
-  writeLines(buildLetter(cv, letter), 10, 5.7, 0)
-
-  drawFooter(doc, page, colors, margin)
-  doc.save(`${cleanName(cv.name)}-Vellon-PASS-Cover-Letter.pdf`)
-}
-
-function Field({ label, value, onChange, placeholder, multiline = false, rows = 3 }) {
+function Field({ label, value, onChange, placeholder = '', multiline = false, rows = 3, type = 'text' }) {
   return (
-    <label className="pass-field">
+    <label className="vp2-field">
       <span>{label}</span>
       {multiline ? (
-        <textarea rows={rows} value={value} onChange={event => onChange(event.target.value)}
-          placeholder={placeholder || ''} />
+        <textarea rows={rows} value={value || ''} placeholder={placeholder}
+          onChange={event => onChange(event.target.value)} />
       ) : (
-        <input value={value} onChange={event => onChange(event.target.value)}
-          placeholder={placeholder || ''} />
+        <input type={type} value={value || ''} placeholder={placeholder}
+          onChange={event => onChange(event.target.value)} />
       )}
     </label>
   )
 }
 
-function readSavedDraft() {
-  try {
-    if (typeof window === 'undefined') return null
-    const raw = window.localStorage.getItem(STORAGE_KEY)
-    if (!raw) return null
-    const saved = JSON.parse(raw)
-    return saved && saved.version === 1 ? saved : null
-  } catch {
-    return null
+function Preview({ cv, theme }) {
+  return (
+    <aside className={`vp2-preview vp2-paper-${theme}`}>
+      <div className="vp2-preview-label"><EyeIcon /> LIVE DOCUMENT PREVIEW</div>
+      <article className="vp2-paper">
+        <div className="vp2-paper-brand">VÉLLON <span>/ PASS</span></div>
+        <h2>{cv.name || 'Your Full Name'}</h2>
+        <p className="vp2-paper-title">{cv.title || 'Professional Title'}</p>
+        <p className="vp2-paper-contact">
+          {[cv.email, cv.phone, cv.location].filter(Boolean).join(' · ') || 'Email · Phone · Location'}
+        </p>
+        {cv.summary && <section><h3>PROFILE</h3><p>{cv.summary}</p></section>}
+        {cv.skills && <section><h3>CORE SKILLS</h3><p>{cv.skills}</p></section>}
+        {cv.experience.some(job => [job.role, job.company, job.dates, job.details].some(Boolean)) &&
+          <section>
+            <h3>EXPERIENCE</h3>
+            {cv.experience.filter(job => [job.role, job.company, job.dates, job.details].some(Boolean)).map(job => (
+              <div className="vp2-paper-job" key={job.id}>
+                <strong>{job.role || 'Position'}{job.company ? ` — ${job.company}` : ''}</strong>
+                {job.dates && <small>{job.dates}</small>}
+                {job.details && <p>{job.details}</p>}
+              </div>
+            ))}
+          </section>
+        }
+        {cv.education && <section><h3>EDUCATION</h3><p>{cv.education}</p></section>}
+        <footer>VÉLLON PASS <span>PROFESSIONAL PROFILE</span></footer>
+      </article>
+      <p className="vp2-preview-note">Preview approximation. The exported PDF uses a print-ready A4 layout.</p>
+    </aside>
+  )
+}
+
+function EyeIcon() {
+  return <span aria-hidden="true">◉</span>
+}
+
+function exportPDF(kind, cv, letter, settings) {
+  if (!cv.name.trim()) {
+    window.alert('Enter your full name in the CV editor before exporting.')
+    return
   }
+
+  const doc = new jsPDF({ format: 'a4', unit: 'mm' })
+  const palette = themes[settings.theme] || themes.obsidian
+  const pageW = doc.internal.pageSize.getWidth()
+  const pageH = doc.internal.pageSize.getHeight()
+  const margin = 19
+  const width = pageW - margin * 2
+  const bottom = pageH - 23
+  let y = 32
+
+  const background = () => {
+    doc.setFillColor(...palette.paper)
+    doc.rect(0, 0, pageW, pageH, 'F')
+  }
+  background()
+
+  const nextPage = () => {
+    doc.addPage()
+    background()
+    y = 30
+  }
+
+  const write = (value, size = 9, color = palette.text, style = 'normal', gap = 0) => {
+    doc.setFont('helvetica', style)
+    doc.setFontSize(size)
+    doc.setTextColor(...color)
+    const lines = doc.splitTextToSize(String(value || ''), width)
+    for (const line of lines) {
+      if (y + size * 0.38 > bottom) nextPage()
+      doc.text(line, margin, y)
+      y += Math.max(size * 0.42, 3.5)
+    }
+    y += gap
+  }
+
+  const heading = value => {
+    y += 2
+    write(value.toUpperCase(), 10, palette.accent, 'bold', 2)
+    doc.setDrawColor(...palette.accent)
+    doc.setLineWidth(0.25)
+    doc.line(margin, y - 1, pageW - margin, y - 1)
+    y += 3
+  }
+
+  if (kind === 'cv') {
+    write(cv.name, 23, palette.accent, 'bold', 1)
+    write(cv.title || 'Professional Profile', 11, palette.text, 'normal', 2)
+    write([cv.email, cv.phone, cv.location].filter(Boolean).join('  |  '), 8, palette.muted, 'normal', 5)
+
+    if (cv.summary.trim()) {
+      heading('Professional Profile')
+      write(cv.summary, settings.fontSize, palette.text, 'normal', settings.spacing)
+    }
+    if (cv.skills.trim()) {
+      heading('Core Skills')
+      write(cv.skills, settings.fontSize, palette.text, 'normal', settings.spacing)
+    }
+
+    const jobs = cv.experience.filter(job =>
+      [job.role, job.company, job.dates, job.details].some(value => String(value || '').trim())
+    )
+    if (jobs.length) {
+      heading('Professional Experience')
+      jobs.forEach(job => {
+        write([job.role, job.company].filter(Boolean).join(' — ') || 'Experience',
+          9, palette.accent, 'bold', 1)
+        if (job.dates) write(job.dates, 8, palette.muted, 'normal', 1)
+        if (job.details) write(job.details, settings.fontSize, palette.text, 'normal', 3)
+      })
+    }
+    if (cv.education.trim()) {
+      heading('Education & Qualifications')
+      write(cv.education, settings.fontSize, palette.text, 'normal', 2)
+    }
+  } else {
+    write(cv.name, 21, palette.accent, 'bold', 1)
+    write([cv.title, cv.email, cv.phone, cv.location].filter(Boolean).join(' · '), 9, palette.text, 'normal', 7)
+    write(letter.date || new Date().toLocaleDateString(), 9, palette.muted, 'normal', 6)
+    if (letter.recipient) write(letter.recipient, 10, palette.text, 'bold', 1)
+    if (letter.company) write(letter.company, 10, palette.text, 'normal', 1)
+    if (letter.role) write(`Re: ${letter.role}`, 10, palette.accent, 'bold', 6)
+    write(suggestedLetter(cv, letter), 10, palette.text, 'normal', 2)
+  }
+
+  const totalPages = doc.internal.getNumberOfPages()
+  for (let page = 1; page <= totalPages; page += 1) {
+    doc.setPage(page)
+    doc.setTextColor(...palette.accent)
+    doc.setFont('helvetica', 'bold')
+    doc.setFontSize(8)
+    doc.text('VÉLLON  /  PASS', margin, 14)
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(7)
+    doc.text(kind === 'cv' ? 'CURRICULUM VITAE' : 'COVER LETTER', pageW - margin, 14, { align: 'right' })
+    doc.setDrawColor(...palette.accent)
+    doc.setLineWidth(0.3)
+    doc.line(margin, 18, pageW - margin, 18)
+    doc.line(margin, pageH - 16, pageW - margin, pageH - 16)
+    doc.setTextColor(...palette.muted)
+    doc.text('PROFESSIONAL APPLICATION DOCUMENT', margin, pageH - 10)
+    doc.text(`${page} / ${totalPages}`, pageW - margin, pageH - 10, { align: 'right' })
+  }
+
+  const safeName = cv.name.trim().replace(/[^a-z0-9_-]+/gi, '-').slice(0, 55) || 'Candidate'
+  doc.save(`${safeName}-Vellon-PASS-${kind === 'cv' ? 'CV' : 'Cover-Letter'}.pdf`)
 }
 
 export default function VellonPass({ form = {} }) {
-  const [initialDraft] = useState(() => readSavedDraft())
-  const [cv, setCV] = useState(() => {
-    const base = seedCV(form)
-    const saved = initialDraft?.cv
-    if (!saved || typeof saved !== 'object' || Array.isArray(saved)) return base
-    return {
-      ...base,
-      ...saved,
-      experience: Array.isArray(saved.experience) ? saved.experience : base.experience
-    }
-  })
-  const [letter, setLetter] = useState(() => ({
+  const [initial] = useState(() => loadDraft(form))
+  const [cv, setCV] = useState(initial.cv)
+  const [letter, setLetter] = useState({
     recipient: '',
     company: '',
     role: '',
-    date: today(),
+    date: new Date().toLocaleDateString('en-ZA', { day: 'numeric', month: 'long', year: 'numeric' }),
     body: '',
-    ...(initialDraft?.letter && typeof initialDraft.letter === 'object'
-      ? initialDraft.letter : {})
-  }))
-  const [settings, setSettings] = useState(() => {
-    const defaults = { theme: 'obsidian', fontSize: 9, lineHeight: 5, spacing: 5 }
-    const saved = initialDraft?.settings
-    if (!saved || typeof saved !== 'object' || Array.isArray(saved)) return defaults
-    return {
-      ...defaults,
-      ...saved,
-      theme: saved.theme === 'ivory' ? 'ivory' : 'obsidian',
-      fontSize: Number.isFinite(saved.fontSize) ? saved.fontSize : defaults.fontSize,
-      lineHeight: Number.isFinite(saved.lineHeight) ? saved.lineHeight : defaults.lineHeight,
-      spacing: Number.isFinite(saved.spacing) ? saved.spacing : defaults.spacing
-    }
+    ...initial.letter
   })
-  const [view, setView] = useState('overview')
-  const [notice, setNotice] = useState('')
+  const [settings, setSettings] = useState({
+    theme: 'obsidian',
+    fontSize: 9,
+    spacing: 4,
+    ...initial.settings
+  })
+  const [view, setView] = useState('home')
+  const [notice, setNotice] = useState('Your workspace is ready')
 
   useEffect(() => {
     try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify({
-        version: 1,
-        cv,
-        letter,
-        settings
-      }))
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ version: 2, cv, letter, settings }))
     } catch {
-      // Storage may be disabled or full; the editor should remain usable.
+      // Keep the current draft usable if browser storage is unavailable.
+      // Avoid setting React state synchronously inside this persistence effect.
+      console.warn('VÉLLON PASS: local draft saving is unavailable.')
     }
   }, [cv, letter, settings])
 
   const updateCV = (key, value) => {
     setCV(old => ({ ...old, [key]: value }))
-    setNotice('PASS draft updated')
+    setNotice('Changes saved locally')
   }
   const updateLetter = (key, value) => {
     setLetter(old => ({ ...old, [key]: value }))
-    setNotice('Cover letter updated')
+    setNotice('Changes saved locally')
   }
   const updateSettings = (key, value) => {
     setSettings(old => ({ ...old, [key]: value }))
-    setNotice('Design settings updated')
+    setNotice('Design updated')
   }
-  const addExperience = () => updateCV('experience', [
-    ...cv.experience,
-    { id: makeId(), role: '', company: '', dates: '', details: '' }
-  ])
-  const updateExperience = (id, key, value) => {
+  const updateJob = (id, key, value) => {
     setCV(old => ({
       ...old,
-      experience: old.experience.map(job =>
-        job.id === id ? { ...job, [key]: value } : job
-      )
+      experience: old.experience.map(job => job.id === id ? { ...job, [key]: value } : job)
     }))
-    setNotice('Experience updated')
   }
-  const removeExperience = id => {
-    setCV(old => ({ ...old, experience: old.experience.filter(job => job.id !== id) }))
-    setNotice('Experience removed')
-  }
+  const addJob = () => setCV(old => ({
+    ...old,
+    experience: [...old.experience, { id: newId(), role: '', company: '', dates: '', details: '' }]
+  }))
 
-  const generatedLetter = buildLetter(cv, letter)
-
-  const navItems = [
-    { id: 'overview', label: 'Overview', icon: LayoutTemplate },
-    { id: 'cv', label: 'CV Editor', icon: UserRound },
+  const nav = [
+    { id: 'home', label: 'Overview', icon: LayoutDashboard },
+    { id: 'cv', label: 'CV Studio', icon: UserRound },
     { id: 'letter', label: 'Cover Letter', icon: Mail },
-    { id: 'design', label: 'Design Studio', icon: Palette },
-    { id: 'export', label: 'Export Center', icon: Download }
+    { id: 'design', label: 'Design', icon: Palette },
+    { id: 'export', label: 'Export', icon: Download }
   ]
 
   return (
-    <section className="pass-workspace" id="vellon-pass">
-      <header className="pass-luxury-header">
-        <div className="pass-brand-lockup">
-          <div className="pass-brand-icon"><Crown size={22}/></div>
-          <div>
-            <div className="pass-brand-name">VÉLLON <span>PASS</span></div>
-            <div className="pass-brand-subtitle">THE PREMIUM CAREER STUDIO</div>
-          </div>
-        </div>
-        <div className="pass-header-status"><span/> PRIVATE WORKSPACE</div>
+    <section className="vp2" id="vellon-pass">
+      <header className="vp2-header">
+        <a className="vp2-brand" href="#vellon-pass" onClick={event => { event.preventDefault(); setView('home') }}>
+          <span className="vp2-brand-mark"><Crown size={20}/></span>
+          <span><strong>VÉLLON <i>PASS</i></strong><small>YOUR PRIVATE CAREER STUDIO</small></span>
+        </a>
+        <div className="vp2-private"><ShieldCheck size={15}/> PRIVATE WORKSPACE</div>
       </header>
 
-      <div className="pass-workspace-intro">
+      <div className="vp2-intro">
         <div>
-          <div className="pass-eyebrow"><Sparkles size={14}/> YOUR CAREER. YOUR PRESENTATION.</div>
-          <h2>Make your next move <span>count.</span></h2>
-          <p>A dedicated space for your premium CV, tailored cover letter, and polished application documents.</p>
+          <span className="vp2-kicker">THE NEXT CHAPTER STARTS HERE</span>
+          <h2>Your career.<br/><em>Presented properly.</em></h2>
+          <p>Create professional application documents with a live preview, thoughtful design controls, and print-ready PDF exports.</p>
         </div>
-        <div className="pass-monogram" aria-label="VÉLLON PASS design mark">
-          <span>VÉLLON</span><strong>PASS</strong><small>CAREER STUDIO</small>
-        </div>
+        <div className="vp2-seal"><Crown size={27}/><strong>PASS</strong><small>CAREER STUDIO</small></div>
       </div>
 
-      <nav className="pass-workspace-nav" aria-label="PASS workspace">
-        {navItems.map(item => {
+      <nav className="vp2-nav" aria-label="PASS workspace navigation">
+        {nav.map(item => {
           const Icon = item.icon
           return (
-            <button key={item.id} className={view === item.id ? 'active' : ''}
-              aria-current={view === item.id ? 'page' : undefined}
+            <button type="button" key={item.id} className={view === item.id ? 'is-active' : ''}
               onClick={() => setView(item.id)}>
               <Icon size={16}/><span>{item.label}</span>
-              {view === item.id && <ChevronRight size={13} className="pass-nav-arrow"/>}
             </button>
           )
         })}
       </nav>
 
-      <div className="pass-workspace-content">
-        {view === 'overview' && (
-          <div className="pass-overview">
-            <div className="pass-welcome-card">
-              <div>
-                <div className="pass-eyebrow">YOUR PRIVATE CAREER DESK</div>
-                <h3>Welcome to your studio.</h3>
-                <p>Build and refine your application documents independently of the free CV editor.</p>
-                <button className="pass-primary-button" onClick={() => setView('cv')}>
-                  Open CV editor <ChevronRight size={16}/>
-                </button>
-              </div>
-              <div className="pass-welcome-emblem"><Crown size={35}/><span>PASS</span></div>
-            </div>
+      <div className="vp2-status"><span className="vp2-status-dot"/>{notice}</div>
 
-            <div className="pass-overview-grid">
-              <button className="pass-feature-card" onClick={() => setView('cv')}>
-                <span className="pass-feature-icon"><FileText size={20}/></span>
-                <strong>Premium CV</strong>
-                <small>Edit your profile, skills, experience, and education.</small>
-                <span className="pass-feature-link">EDIT CV <ChevronRight size={13}/></span>
-              </button>
-              <button className="pass-feature-card" onClick={() => setView('letter')}>
-                <span className="pass-feature-icon"><Mail size={20}/></span>
-                <strong>Cover letter studio</strong>
-                <small>Tailor a letter to the role and company you're applying to.</small>
-                <span className="pass-feature-link">EDIT LETTER <ChevronRight size={13}/></span>
-              </button>
-              <button className="pass-feature-card" onClick={() => setView('design')}>
-                <span className="pass-feature-icon"><Palette size={20}/></span>
-                <strong>Design studio</strong>
-                <small>Choose a finish and tune document typography and spacing.</small>
-                <span className="pass-feature-link">CUSTOMIZE <ChevronRight size={13}/></span>
-              </button>
-              <button className="pass-feature-card" onClick={() => setView('export')}>
-                <span className="pass-feature-icon"><Download size={20}/></span>
-                <strong>Export center</strong>
-                <small>Download your CV and cover letter as separate PDFs.</small>
-                <span className="pass-feature-link">EXPORT FILES <ChevronRight size={13}/></span>
-              </button>
+      {view === 'home' && (
+        <div className="vp2-home">
+          <div className="vp2-hero-card">
+            <div><span className="vp2-kicker">YOUR DOCUMENT WORKSPACE</span>
+              <h3>Make a stronger first impression.</h3>
+              <p>Your own CV and cover-letter workspace. Drafts save locally on this device.</p>
+              <button type="button" className="vp2-primary" onClick={() => setView('cv')}>Open CV Studio <ArrowRight size={16}/></button>
             </div>
-
-            <div className="pass-isolation-note">
-              <ShieldCheck size={17}/>
-              <div><strong>Independent PASS workspace</strong><p>Changes here stay inside PASS. Use the import button to copy the current free CV into PASS whenever you choose.</p></div>
-            </div>
+            <div className="vp2-hero-icon"><Crown size={34}/><span>V / P</span></div>
           </div>
-        )}
+          <div className="vp2-tiles">
+            <button type="button" onClick={() => setView('cv')}><FileText/><strong>CV Studio</strong><span>Edit your profile, skills, experience, and education.</span><b>OPEN STUDIO →</b></button>
+            <button type="button" onClick={() => setView('letter')}><Mail/><strong>Cover Letter</strong><span>Prepare a tailored letter for a specific application.</span><b>WRITE LETTER →</b></button>
+            <button type="button" onClick={() => setView('design')}><Palette/><strong>Design System</strong><span>Choose a document finish and adjust typography.</span><b>CHOOSE STYLE →</b></button>
+            <button type="button" onClick={() => setView('export')}><Download/><strong>Export Center</strong><span>Download your documents as separate PDF files.</span><b>EXPORT FILES →</b></button>
+          </div>
+          <div className="vp2-privacy"><ShieldCheck size={19}/><div><strong>Local-first drafts</strong><p>PASS stores its draft in this browser on this device. Clearing site data may remove saved drafts, so export important documents.</p></div></div>
+        </div>
+      )}
 
-        {view === 'cv' && (
-          <div className="pass-editor-layout">
-            <div className="pass-editor-panel">
-              <div className="pass-section-heading">
-                <div><div className="pass-eyebrow">DOCUMENT 01</div><h3>Premium CV editor</h3></div>
-                <span className="pass-live-chip"><span/> LIVE DRAFT</span>
-              </div>
-              <p className="pass-helper">Edit the premium copy here. These fields do not update your free CV.</p>
-
-              <div className="pass-form-grid">
-                <Field label="Full name" value={cv.name} onChange={v => updateCV('name', v)} placeholder="Your full name"/>
-                <Field label="Professional title" value={cv.title} onChange={v => updateCV('title', v)} placeholder="e.g. Operations Coordinator"/>
-                <Field label="Email address" value={cv.email} onChange={v => updateCV('email', v)} placeholder="you@example.com"/>
-                <Field label="Phone number" value={cv.phone} onChange={v => updateCV('phone', v)} placeholder="+27 ..."/>
-                <Field label="Location" value={cv.location} onChange={v => updateCV('location', v)} placeholder="City, country"/>
-              </div>
-
-              <Field label="Professional profile" value={cv.summary} onChange={v => updateCV('summary', v)}
-                multiline rows={5} placeholder="Write a concise, accurate summary of your experience and strengths."/>
-
-              <Field label="Core skills" value={cv.skills} onChange={v => updateCV('skills', v)}
-                multiline rows={4} placeholder="Separate skills with commas or line breaks."/>
-
-              <div className="pass-repeater-heading">
-                <div><h4>Professional experience</h4><p>Add roles with clear dates and achievement-focused details.</p></div>
-                <button className="pass-secondary-button" onClick={addExperience}><Plus size={15}/> Add role</button>
-              </div>
-
-              {cv.experience.map((job, index) => (
-                <div className="pass-experience-card" key={job.id}>
-                  <div className="pass-experience-top"><strong>ROLE {String(index + 1).padStart(2, '0')}</strong>
-                    <button aria-label={`Remove role ${index + 1}`} onClick={() => removeExperience(job.id)}><Trash2 size={15}/></button>
-                  </div>
-                  <div className="pass-form-grid">
-                    <Field label="Job title" value={job.role} onChange={v => updateExperience(job.id, 'role', v)} placeholder="Position"/>
-                    <Field label="Company" value={job.company} onChange={v => updateExperience(job.id, 'company', v)} placeholder="Organization"/>
-                    <Field label="Dates" value={job.dates} onChange={v => updateExperience(job.id, 'dates', v)} placeholder="2022 – 2025"/>
-                  </div>
-                  <Field label="Responsibilities and achievements" value={job.details}
-                    onChange={v => updateExperience(job.id, 'details', v)} multiline rows={4}
-                    placeholder="Describe your actual responsibilities, results, and contributions."/>
+      {view === 'cv' && (
+        <div className="vp2-editor-layout">
+          <div className="vp2-panel">
+            <div className="vp2-panel-heading"><div><span className="vp2-kicker">DOCUMENT 01</span><h3>Build your CV</h3></div><span className="vp2-live">LIVE EDITOR</span></div>
+            <p className="vp2-help">Keep information accurate and relevant to the job. Your edits here do not change the free CV.</p>
+            <div className="vp2-fields">
+              <Field label="Full name" value={cv.name} onChange={v => updateCV('name', v)} placeholder="Your full name"/>
+              <Field label="Professional title" value={cv.title} onChange={v => updateCV('title', v)} placeholder="e.g. Sales Consultant"/>
+              <Field label="Email address" type="email" value={cv.email} onChange={v => updateCV('email', v)} placeholder="you@example.com"/>
+              <Field label="Phone number" value={cv.phone} onChange={v => updateCV('phone', v)} placeholder="+27 ..."/>
+              <Field label="Location" value={cv.location} onChange={v => updateCV('location', v)} placeholder="Town or city"/>
+            </div>
+            <Field label="Professional profile" value={cv.summary} onChange={v => updateCV('summary', v)} multiline rows={5} placeholder="A concise, factual introduction to your strengths and experience."/>
+            <Field label="Core skills" value={cv.skills} onChange={v => updateCV('skills', v)} multiline rows={4} placeholder="Use commas or line breaks between skills."/>
+            <div className="vp2-repeat-heading"><div><h4>Experience</h4><p>Add roles, dates, and real responsibilities.</p></div><button type="button" className="vp2-secondary" onClick={addJob}><Plus size={15}/> Add role</button></div>
+            {cv.experience.map((job, index) => (
+              <div className="vp2-job" key={job.id}>
+                <div className="vp2-job-heading"><strong>POSITION {String(index + 1).padStart(2, '0')}</strong><button type="button" aria-label={`Remove position ${index + 1}`} onClick={() => setCV(old => ({ ...old, experience: old.experience.filter(item => item.id !== job.id) }))}><Trash2 size={15}/></button></div>
+                <div className="vp2-fields">
+                  <Field label="Job title" value={job.role} onChange={v => updateJob(job.id, 'role', v)} placeholder="Position"/>
+                  <Field label="Company" value={job.company} onChange={v => updateJob(job.id, 'company', v)} placeholder="Organization"/>
+                  <Field label="Dates" value={job.dates} onChange={v => updateJob(job.id, 'dates', v)} placeholder="2023–2025"/>
                 </div>
-              ))}
-
-              <Field label="Education and qualifications" value={cv.education} onChange={v => updateCV('education', v)}
-                multiline rows={4} placeholder="Qualifications, institution, and dates."/>
-
-              <div className="pass-editor-actions">
-                <button className="pass-secondary-button" onClick={() => {
-                  setCV(seedCV(form))
-                  setNotice('PASS CV replaced with a fresh copy of the free CV')
-                }}><RotateCcw size={15}/> Import free CV</button>
-                <button className="pass-primary-button" onClick={() => setView('export')}>Continue to export <ChevronRight size={15}/></button>
+                <Field label="Responsibilities and achievements" value={job.details} onChange={v => updateJob(job.id, 'details', v)} multiline rows={4} placeholder="Describe your actual work and contributions."/>
               </div>
+            ))}
+            <Field label="Education and qualifications" value={cv.education} onChange={v => updateCV('education', v)} multiline rows={4} placeholder="Qualification, institution, and year."/>
+            <div className="vp2-actions">
+              <button type="button" className="vp2-secondary" onClick={() => { setCV(seedCV(form)); setNotice('Imported the current free CV') }}><RotateCcw size={15}/> Import free CV</button>
+              <button type="button" className="vp2-primary" onClick={() => setView('export')}>Continue to export <ArrowRight size={15}/></button>
             </div>
-
-            <CVPreview cv={cv} theme={settings.theme}/>
           </div>
-        )}
+          <Preview cv={cv} theme={settings.theme}/>
+        </div>
+      )}
 
-        {view === 'letter' && (
-          <div className="pass-editor-layout">
-            <div className="pass-editor-panel">
-              <div className="pass-section-heading">
-                <div><div className="pass-eyebrow">DOCUMENT 02</div><h3>Cover letter studio</h3></div>
-                <Mail size={20} className="pass-accent-icon"/>
-              </div>
-              <p className="pass-helper">The letter is independent. Add your own content or edit the suggested draft in full.</p>
-              <div className="pass-form-grid">
-                <Field label="Recipient name" value={letter.recipient} onChange={v => updateLetter('recipient', v)} placeholder="Hiring manager"/>
-                <Field label="Company" value={letter.company} onChange={v => updateLetter('company', v)} placeholder="Company name"/>
-                <Field label="Position" value={letter.role} onChange={v => updateLetter('role', v)} placeholder="Role you're applying for"/>
-                <Field label="Date" value={letter.date} onChange={v => updateLetter('date', v)} placeholder="Application date"/>
-              </div>
-              <Field label="Letter content" value={letter.body} onChange={v => updateLetter('body', v)}
-                multiline rows={18} placeholder={generatedLetter}/>
-              <div className="pass-editor-actions">
-                <button className="pass-secondary-button" onClick={() => updateLetter('body', '')}><RotateCcw size={15}/> Restore suggested draft</button>
-                <button className="pass-primary-button" onClick={() => setView('export')}>Continue to export <ChevronRight size={15}/></button>
-              </div>
+      {view === 'letter' && (
+        <div className="vp2-editor-layout">
+          <div className="vp2-panel">
+            <div className="vp2-panel-heading"><div><span className="vp2-kicker">DOCUMENT 02</span><h3>Write your letter</h3></div><Mail className="vp2-gold-icon"/></div>
+            <p className="vp2-help">A suggested letter is generated from your CV details. Enter your own text to replace it, or restore the suggestion.</p>
+            <div className="vp2-fields">
+              <Field label="Recipient" value={letter.recipient} onChange={v => updateLetter('recipient', v)} placeholder="Hiring manager"/>
+              <Field label="Company" value={letter.company} onChange={v => updateLetter('company', v)} placeholder="Company name"/>
+              <Field label="Position" value={letter.role} onChange={v => updateLetter('role', v)} placeholder="Position applying for"/>
+              <Field label="Date" value={letter.date} onChange={v => updateLetter('date', v)} placeholder="Application date"/>
             </div>
-            <LetterPreview cv={cv} letter={letter} body={generatedLetter} theme={settings.theme}/>
+            <Field label="Letter content" value={letter.body || ''} onChange={v => updateLetter('body', v)} multiline rows={17} placeholder={suggestedLetter(cv, letter)}/>
+            <div className="vp2-actions">
+              <button type="button" className="vp2-secondary" onClick={() => updateLetter('body', '')}><RotateCcw size={15}/> Restore suggestion</button>
+              <button type="button" className="vp2-primary" onClick={() => setView('export')}>Continue to export <ArrowRight size={15}/></button>
+            </div>
           </div>
-        )}
+          <aside className={`vp2-preview vp2-paper-${settings.theme}`}>
+            <div className="vp2-preview-label"><Mail size={14}/> LIVE LETTER PREVIEW</div>
+            <article className="vp2-paper vp2-letter-paper">
+              <div className="vp2-paper-brand">VÉLLON <span>/ PASS</span></div>
+              <h2>{cv.name || 'Your Full Name'}</h2>
+              <p className="vp2-paper-contact">{[cv.email, cv.phone, cv.location].filter(Boolean).join(' · ')}</p>
+              <p>{letter.date}</p>
+              <p>{letter.recipient}<br/>{letter.company}</p>
+              {letter.role && <strong>Re: {letter.role}</strong>}
+              <p className="vp2-letter-text">{suggestedLetter(cv, letter)}</p>
+            </article>
+          </aside>
+        </div>
+      )}
 
-        {view === 'design' && (
-          <div className="pass-design-layout">
-            <div className="pass-editor-panel">
-              <div className="pass-section-heading">
-                <div><div className="pass-eyebrow">DESIGN SYSTEM</div><h3>Set the finish.</h3></div>
-                <Palette size={20} className="pass-accent-icon"/>
-              </div>
-              <p className="pass-helper">These settings apply to the PASS CV and cover-letter PDFs.</p>
-
-              <div className="pass-theme-options">
-                <button className={settings.theme === 'obsidian' ? 'selected' : ''} onClick={() => updateSettings('theme', 'obsidian')}>
-                  <span className="pass-theme-swatch obsidian-swatch"><i/></span>
-                  <strong>Obsidian Luxury</strong><small>Matte black · Champagne gold</small>
-                  {settings.theme === 'obsidian' && <Check size={17}/>}
-                </button>
-                <button className={settings.theme === 'ivory' ? 'selected' : ''} onClick={() => updateSettings('theme', 'ivory')}>
-                  <span className="pass-theme-swatch ivory-swatch"><i/></span>
-                  <strong>Ivory Editorial</strong><small>Warm paper · Antique gold</small>
-                  {settings.theme === 'ivory' && <Check size={17}/>}
-                </button>
-              </div>
-
-              <div className="pass-setting-row">
-                <div><strong>Body text size</strong><small>Adjust the exported CV's body typography.</small></div>
-                <select value={settings.fontSize} onChange={e => updateSettings('fontSize', Number(e.target.value))}>
-                  <option value={8}>Compact · 8 pt</option>
-                  <option value={9}>Standard · 9 pt</option>
-                  <option value={10}>Comfortable · 10 pt</option>
-                </select>
-              </div>
-              <div className="pass-setting-row">
-                <div><strong>Line spacing</strong><small>Control vertical rhythm in the CV.</small></div>
-                <select value={settings.lineHeight} onChange={e => updateSettings('lineHeight', Number(e.target.value))}>
-                  <option value={4.5}>Tight</option>
-                  <option value={5}>Balanced</option>
-                  <option value={6}>Airy</option>
-                </select>
-              </div>
-              <div className="pass-setting-row">
-                <div><strong>Section spacing</strong><small>Space between CV sections.</small></div>
-                <select value={settings.spacing} onChange={e => updateSettings('spacing', Number(e.target.value))}>
-                  <option value={3}>Compact</option>
-                  <option value={5}>Balanced</option>
-                  <option value={8}>Airy</option>
-                </select>
-              </div>
-              <div className="pass-isolation-note"><ShieldCheck size={17}/><div><strong>Designed for professional use</strong><p>Obsidian is the statement finish. Ivory Editorial is a lighter option when a more traditional CV is appropriate.</p></div></div>
+      {view === 'design' && (
+        <div className="vp2-design-layout">
+          <div className="vp2-panel">
+            <span className="vp2-kicker">DOCUMENT DESIGN</span><h3>Choose your finish.</h3>
+            <p className="vp2-help">Design settings apply to both exported PDFs. Preview the CV to see the selected palette.</p>
+            <div className="vp2-themes">
+              <button type="button" className={settings.theme === 'obsidian' ? 'selected' : ''} onClick={() => updateSettings('theme', 'obsidian')}>
+                <span className="vp2-swatch vp2-swatch-dark"/><strong>Obsidian Luxury</strong><small>Matte black · Champagne gold</small>{settings.theme === 'obsidian' && <Check/>}
+              </button>
+              <button type="button" className={settings.theme === 'ivory' ? 'selected' : ''} onClick={() => updateSettings('theme', 'ivory')}>
+                <span className="vp2-swatch vp2-swatch-ivory"/><strong>Ivory Editorial</strong><small>Warm paper · Antique gold</small>{settings.theme === 'ivory' && <Check/>}
+              </button>
             </div>
-            <CVPreview cv={cv} theme={settings.theme}/>
+            <div className="vp2-setting"><label htmlFor="vp2-font-size">CV body text size</label><select id="vp2-font-size" value={settings.fontSize} onChange={event => updateSettings('fontSize', Number(event.target.value))}><option value={8}>Compact · 8 pt</option><option value={9}>Standard · 9 pt</option><option value={10}>Comfortable · 10 pt</option></select></div>
+            <div className="vp2-setting"><label htmlFor="vp2-spacing">Section spacing</label><select id="vp2-spacing" value={settings.spacing} onChange={event => updateSettings('spacing', Number(event.target.value))}><option value={2}>Compact</option><option value={4}>Balanced</option><option value={7}>Relaxed</option></select></div>
+            <button type="button" className="vp2-primary" onClick={() => setView('export')}>Go to Export Center <ArrowRight size={15}/></button>
           </div>
-        )}
+          <Preview cv={cv} theme={settings.theme}/>
+        </div>
+      )}
 
-        {view === 'export' && (
-          <div className="pass-export-center">
-            <div className="pass-section-heading">
-              <div><div className="pass-eyebrow">FINAL DOCUMENTS</div><h3>Your export center</h3></div>
-              <Download size={20} className="pass-accent-icon"/>
-            </div>
-            <p className="pass-helper">Generate separate PDF files from your current PASS drafts and design settings.</p>
-            <div className="pass-export-grid">
-              <article className="pass-export-card">
-                <div className="pass-export-icon"><FileText size={25}/></div>
-                <div className="pass-eyebrow">DOCUMENT 01</div>
-                <h4>Premium CV</h4>
-                <p>{cv.name || 'Your name'}{cv.title ? ` · ${cv.title}` : ''}</p>
-                <div className="pass-export-meta"><span>PDF · A4</span><span>{themes[settings.theme].label}</span></div>
-                <button className="pass-primary-button" onClick={() => exportCV(cv, settings)}><Download size={16}/> Export CV PDF</button>
-                {!cv.name.trim() && <small className="pass-export-warning">Add your name in CV Editor before exporting.</small>}
-              </article>
-              <article className="pass-export-card">
-                <div className="pass-export-icon"><Mail size={25}/></div>
-                <div className="pass-eyebrow">DOCUMENT 02</div>
-                <h4>Cover letter</h4>
-                <p>{letter.role || cv.title || 'Application letter'}{letter.company ? ` · ${letter.company}` : ''}</p>
-                <div className="pass-export-meta"><span>PDF · A4</span><span>Matching design</span></div>
-                <button className="pass-primary-button" onClick={() => exportLetter(cv, letter, settings)}><Download size={16}/> Export letter PDF</button>
-                {!cv.name.trim() && <small className="pass-export-warning">Add your name in CV Editor before exporting.</small>}
-              </article>
-            </div>
-            <div className="pass-isolation-note"><ShieldCheck size={17}/><div><strong>Before you send</strong><p>Check contact details, dates, spelling, and every claim. The PASS design mark is branding only, not an accreditation or employment guarantee.</p></div></div>
+      {view === 'export' && (
+        <div className="vp2-export">
+          <span className="vp2-kicker">FINAL DOCUMENTS</span><h3>Ready when you are.</h3>
+          <p className="vp2-help">Generate each document as a separate A4 PDF. Check your details before downloading.</p>
+          <div className="vp2-export-grid">
+            <div className="vp2-export-card"><span className="vp2-export-icon"><FileText size={24}/></span><span className="vp2-kicker">DOCUMENT 01</span><h4>Curriculum Vitae</h4><p>{cv.name || 'Your name'}{cv.title ? ` · ${cv.title}` : ''}</p><button type="button" className="vp2-primary" onClick={() => exportPDF('cv', cv, letter, settings)}><Download size={16}/> Download CV PDF</button></div>
+            <div className="vp2-export-card"><span className="vp2-export-icon"><Mail size={24}/></span><span className="vp2-kicker">DOCUMENT 02</span><h4>Cover Letter</h4><p>{letter.company || 'Add a company in Cover Letter'}{letter.role ? ` · ${letter.role}` : ''}</p><button type="button" className="vp2-primary" onClick={() => exportPDF('letter', cv, letter, settings)}><Download size={16}/> Download Letter PDF</button></div>
           </div>
-        )}
-      </div>
+          <div className="vp2-privacy"><ShieldCheck size={19}/><div><strong>Before you submit</strong><p>Review spelling, dates, contact details, and job-specific information. The PDF export uses selectable text and standard fonts.</p></div></div>
+          <button type="button" className="vp2-secondary" onClick={() => setView('cv')}><UserRound size={15}/> Return to CV Studio</button>
+        </div>
+      )}
 
-      <footer className="pass-workspace-footer">
-        <span><ShieldCheck size={14}/> YOUR DOCUMENTS, YOUR DETAILS</span>
-        <span>{notice || 'Independent PASS draft'} · Not synced to the free editor</span>
-      </footer>
+      <footer className="vp2-footer"><span>VÉLLON <b>PASS</b></span><span>CAREER DOCUMENTS, CONSIDERED.</span></footer>
     </section>
-  )
-}
-
-function CVPreview({ cv, theme }) {
-  return (
-    <aside className={`pass-live-preview pass-preview-${theme}`}>
-      <div className="pass-preview-toolbar"><span><Eye size={15}/> LIVE DOCUMENT PREVIEW</span><span>A4 FORMAT</span></div>
-      <article className="pass-paper-preview">
-        <header className="pass-paper-header">
-          <div className="pass-paper-brand">VÉLLON <span>PASS</span></div>
-          <div className="pass-paper-rule"/>
-          <h4>{cv.name || 'YOUR NAME'}</h4>
-          <p>{cv.title || 'PROFESSIONAL PROFILE'}</p>
-          <small>{[cv.email, cv.phone, cv.location].filter(Boolean).join('  ·  ') || 'EMAIL · PHONE · LOCATION'}</small>
-        </header>
-        <div className="pass-paper-body">
-          {cv.summary && <section><h5>Professional Profile</h5><p>{cv.summary}</p></section>}
-          {cv.skills && <section><h5>Core Skills</h5><p>{cv.skills}</p></section>}
-          {cv.experience.filter(j => j.role || j.company || j.dates || j.details).map(job => (
-            <section key={job.id}><h5>Professional Experience</h5>
-              <strong>{[job.role, job.company].filter(Boolean).join(' — ') || 'Experience'}</strong>
-              {job.dates && <small>{job.dates}</small>}
-              {job.details && <p>{job.details}</p>}
-            </section>
-          ))}
-          {cv.education && <section><h5>Education & Qualifications</h5><p>{cv.education}</p></section>}
-          {!cv.summary && !cv.skills && !cv.education && !cv.experience.some(j => j.role || j.company || j.details) && (
-            <p className="pass-preview-placeholder">Your CV sections will appear here as you edit them.</p>
-          )}
-        </div>
-        <footer className="pass-paper-footer"><span>VÉLLON PASS</span><span>PROFESSIONAL APPLICATION</span></footer>
-      </article>
-      <div className="pass-preview-caption"><Award size={14}/> {themes[theme].label}</div>
-    </aside>
-  )
-}
-
-function LetterPreview({ cv, letter, body, theme }) {
-  return (
-    <aside className={`pass-live-preview pass-preview-${theme}`}>
-      <div className="pass-preview-toolbar"><span><Eye size={15}/> LETTER PREVIEW</span><span>A4 FORMAT</span></div>
-      <article className="pass-paper-preview pass-paper-letter">
-        <header className="pass-paper-header">
-          <div className="pass-paper-brand">VÉLLON <span>PASS</span></div>
-          <div className="pass-paper-rule"/>
-          <h4>{cv.name || 'YOUR NAME'}</h4>
-          <small>{[cv.email, cv.phone, cv.location].filter(Boolean).join('  ·  ')}</small>
-        </header>
-        <div className="pass-letter-paper-body">
-          <small>{letter.date}</small>
-          {[letter.recipient, letter.company, letter.role && `Re: ${letter.role}`].filter(Boolean).map((line, index) => <p key={`${index}-${line}`}>{line}</p>)}
-          <p className="pass-letter-paper-content">{body}</p>
-        </div>
-        <footer className="pass-paper-footer"><span>VÉLLON PASS</span><span>PROFESSIONAL CORRESPONDENCE</span></footer>
-      </article>
-      <div className="pass-preview-caption"><Mail size={14}/> Matching cover-letter design</div>
-    </aside>
   )
 }
