@@ -161,3 +161,320 @@ button{cursor:pointer}
 .pass-disclaimer svg{color:var(--gold);flex-shrink:0;margin-top:1px}
 @media(max-width:800px){.pass-promo{align-items:flex-start;flex-direction:column;padding:21px}.pass-suite{padding:18px}.pass-suite-heading{align-items:flex-start}.pass-seal-large{width:88px;height:88px}.pass-seal-large strong{font-size:19px}.pass-seal-large span{font-size:8px}.pass-seal-large small{font-size:4px}.pass-benefits{grid-template-columns:1fr}.pass-grid{grid-template-columns:1fr}}
 @media(max-width:390px){.pass-suite{padding:12px}.pass-suite-heading{gap:12px}.pass-seal-large{width:70px;height:70px;outline-offset:-5px}.pass-seal-large strong{font-size:15px}.pass-seal-large span{font-size:7px}.pass-seal-large small{font-size:3px;letter-spacing:.4px}.pass-document-header{padding:19px 13px 15px}.pass-document-body{padding:15px 13px}.pass-preview-card,.pass-letter-card{padding:12px}}
+
+/* VÉLLON Career Studio: sidebar, navigation and pricing */
+.app-sidebar {
+  position: fixed;
+  z-index: 100;
+  inset: 0 auto 0 0;
+  width: 238px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 15px 18px;
+  color: #eee9df;
+  background: #090909;
+  border-right: 1px solid rgba(216,181,107,.24);
+}
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 4px 8px 26px;
+  color: #f2eee4;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: .09em;
+}
+.sidebar-brand small {
+  display: block;
+  margin-top: 4px;
+  color: #a7a094;
+  font-size: 9px;
+  letter-spacing: .16em;
+}
+.sidebar-brand .brand-mark {
+  display: grid;
+  place-items: center;
+  width: 39px;
+  height: 39px;
+  flex: 0 0 39px;
+  border: 1px solid #d8b56b;
+  border-radius: 10px;
+  color: #d8b56b;
+  font-size: 20px;
+}
+.sidebar-caption {
+  padding: 16px 10px 8px;
+  color: #827b6e;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .17em;
+}
+.sidebar-nav {
+  display: grid;
+  gap: 5px;
+}
+.sidebar-nav button {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  min-height: 44px;
+  padding: 11px 12px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  background: transparent;
+  color: #c8c1b5;
+  text-align: left;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background .18s ease, color .18s ease;
+}
+.sidebar-nav button:hover {
+  background: #171511;
+  color: #fff;
+}
+.sidebar-nav button.active {
+  border-color: rgba(216,181,107,.25);
+  background: linear-gradient(100deg, rgba(216,181,107,.16), rgba(216,181,107,.045));
+  color: #e6c982;
+}
+.sidebar-nav button svg {
+  flex: 0 0 auto;
+}
+.sidebar-nav button span:nth-child(2) {
+  min-width: 0;
+  flex: 1;
+}
+.sidebar-tag {
+  padding: 3px 5px;
+  border: 1px solid rgba(216,181,107,.55);
+  border-radius: 4px;
+  color: #e6c982;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: .08em;
+}
+.sidebar-bottom {
+  display: grid;
+  grid-template-columns: 9px 1fr;
+  gap: 5px 8px;
+  align-items: center;
+  margin-top: auto;
+  padding: 13px 10px 2px;
+  border-top: 1px solid rgba(255,255,255,.09);
+  color: #b8b0a3;
+  font-size: 10px;
+}
+.sidebar-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #9cbb83;
+}
+.sidebar-bottom small {
+  grid-column: 2;
+  color: #797367;
+  font-size: 9px;
+}
+main.app {
+  box-sizing: border-box;
+  width: calc(100% - 238px);
+  margin-left: 238px;
+}
+main.app .plans-page {
+  max-width: 1050px;
+  margin: 36px auto 70px;
+  padding: 0 22px;
+  color: #f1ede4;
+}
+.plans-heading {
+  max-width: 700px;
+  margin: 0 auto 30px;
+  text-align: center;
+}
+.plans-heading h1 {
+  margin: 16px 0 12px;
+  font-size: clamp(30px, 4vw, 48px);
+  letter-spacing: -.04em;
+}
+.plans-heading h1 span {
+  color: #d8b56b;
+}
+.plans-heading p {
+  color: #aaa397;
+  line-height: 1.7;
+}
+.plans-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  align-items: stretch;
+}
+.plan-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 28px;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 16px;
+  background: linear-gradient(150deg, #151515, #0b0b0b);
+  color: #eee9df;
+}
+.plan-card-pass {
+  border-color: rgba(216,181,107,.65);
+  box-shadow: 0 15px 55px rgba(0,0,0,.18);
+}
+.plan-kicker, .plan-ribbon {
+  color: #d8b56b;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .14em;
+}
+.plan-ribbon {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 9px;
+}
+.plan-card h2 {
+  margin: 15px 0 5px;
+  font-size: 25px;
+}
+.plan-price {
+  margin: 8px 0;
+  color: #e3c57e;
+  font-size: 24px;
+  font-weight: 750;
+}
+.plan-price span {
+  color: #8e877a;
+  font-size: 12px;
+  font-weight: 400;
+}
+.plan-description {
+  min-height: 42px;
+  color: #aaa397;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.plan-card ul {
+  display: grid;
+  gap: 12px;
+  margin: 20px 0 26px;
+  padding: 0;
+  list-style: none;
+  color: #d6d0c5;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.plan-card li::before {
+  content: "✓";
+  margin-right: 9px;
+  color: #d8b56b;
+  font-weight: 800;
+}
+.plan-button {
+  width: 100%;
+  margin-top: auto;
+  justify-content: center;
+}
+.plan-footnote {
+  margin: 14px 0 0;
+  color: #918878;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+/* Each navigation destination displays only its own main content. */
+main.app[data-page="dashboard"] .workspace,
+main.app[data-page="dashboard"] .pass-page-content,
+main.app[data-page="dashboard"] .plans-page,
+main.app[data-page="cv"] .hero,
+main.app[data-page="cv"] .pass-promo,
+main.app[data-page="cv"] .pass-page-content,
+main.app[data-page="cv"] .plans-page,
+main.app[data-page="pass"] .hero,
+main.app[data-page="pass"] .pass-promo,
+main.app[data-page="pass"] .workspace,
+main.app[data-page="pass"] .plans-page,
+main.app[data-page="plans"] .hero,
+main.app[data-page="plans"] .pass-promo,
+main.app[data-page="plans"] .pass-page-content,
+main.app[data-page="plans"] .workspace {
+  display: none !important;
+}
+main.app[data-page="dashboard"] .hero,
+main.app[data-page="cv"] .workspace,
+main.app[data-page="pass"] .pass-page-content,
+main.app[data-page="plans"] .plans-page {
+  display: block;
+}
+main.app[data-page="dashboard"] .pass-promo {
+  display: flex;
+}
+
+@media (max-width: 760px) {
+  .app-sidebar {
+    inset: auto 0 0 0;
+    width: 100%;
+    height: auto;
+    min-height: 68px;
+    padding: 7px 5px calc(7px + env(safe-area-inset-bottom));
+    border-right: 0;
+    border-top: 1px solid rgba(216,181,107,.35);
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    align-items: stretch;
+    background: rgba(9,9,9,.97);
+    backdrop-filter: blur(14px);
+  }
+  .sidebar-brand, .sidebar-caption, .sidebar-bottom {
+    display: none;
+  }
+  .sidebar-nav {
+    display: contents;
+  }
+  .sidebar-nav button {
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    min-width: 0;
+    min-height: 52px;
+    padding: 5px 2px;
+    border-radius: 7px;
+    font-size: 9px;
+    text-align: center;
+    white-space: nowrap;
+  }
+  .sidebar-nav button span:nth-child(2) {
+    flex: 0 1 auto;
+  }
+  .sidebar-nav button .sidebar-tag {
+    display: none;
+  }
+  main.app {
+    width: 100%;
+    margin-left: 0;
+    padding-bottom: 88px;
+  }
+  main.app .topbar {
+    gap: 10px;
+  }
+  main.app .top-actions .free-label {
+    display: none;
+  }
+  main.app .plans-page {
+    margin-top: 22px;
+    padding: 0 14px;
+  }
+  .plans-grid {
+    grid-template-columns: 1fr;
+  }
+  .plan-card {
+    padding: 22px;
+  }
+}

@@ -3,6 +3,7 @@ import VellonPass from './VellonPass.jsx'
 import { useMemo, useState } from 'react'
 import {
   ArrowRight, FileText, Download, ShieldCheck, Sparkles,
+  Home, Crown, CreditCard,
   BriefcaseBusiness, GraduationCap, UserRound, Plus, Trash2,
   Eye
 } from 'lucide-react'
@@ -21,6 +22,7 @@ const initialForm = {
 export default function App() {
   const [form, setForm] = useState(initialForm)
   const [activeTab, setActiveTab] = useState('personal')
+  const [activePage, setActivePage] = useState('dashboard')
   const [notice, setNotice] = useState('')
 
   const update = (key, value) => setForm(old => ({ ...old, [key]: value }))
@@ -185,7 +187,51 @@ export default function App() {
   )
 
   return (
-    <main className="app">
+    <main className="app" data-page={activePage}>
+      <aside className="app-sidebar" aria-label="Main navigation">
+        <a className="sidebar-brand" href="#" onClick={(e) => {
+          e.preventDefault()
+          setActivePage('dashboard')
+        }}>
+          <span className="brand-mark">V.</span>
+          <span>VÉLLON<small>CAREER STUDIO</small></span>
+        </a>
+
+        <div className="sidebar-caption">WORKSPACE</div>
+        <nav className="sidebar-nav" aria-label="Workspace">
+          <button className={activePage === 'dashboard' ? 'active' : ''}
+            aria-current={activePage === 'dashboard' ? 'page' : undefined}
+            onClick={() => setActivePage('dashboard')}>
+            <Home size={18}/><span>Dashboard</span>
+          </button>
+          <button className={activePage === 'cv' ? 'active' : ''}
+            aria-current={activePage === 'cv' ? 'page' : undefined}
+            onClick={() => setActivePage('cv')}>
+            <FileText size={18}/><span>My CV</span>
+          </button>
+        </nav>
+
+        <div className="sidebar-caption">PREMIUM</div>
+        <nav className="sidebar-nav" aria-label="Premium">
+          <button className={activePage === 'pass' ? 'active pass-nav' : 'pass-nav'}
+            aria-current={activePage === 'pass' ? 'page' : undefined}
+            onClick={() => setActivePage('pass')}>
+            <Crown size={18}/><span>VÉLLON PASS</span>
+            <span className="sidebar-tag">PASS</span>
+          </button>
+          <button className={activePage === 'plans' ? 'active' : ''}
+            aria-current={activePage === 'plans' ? 'page' : undefined}
+            onClick={() => setActivePage('plans')}>
+            <CreditCard size={18}/><span>Plans &amp; Pricing</span>
+          </button>
+        </nav>
+
+        <div className="sidebar-bottom">
+          <span className="sidebar-status-dot"></span>
+          <span>Local-first workspace</span>
+          <small>No account required</small>
+        </div>
+      </aside>
       <header className="topbar">
         <a className="brand" href="#" aria-label="Vellon Career Studio home">
           <span className="brand-mark">V.</span>
@@ -214,12 +260,55 @@ export default function App() {
           <h2 id="pass-promo-title">Make your next application <span>stand apart.</span></h2>
           <p>Meet VÉLLON PASS: a black-and-gold CV, a matching editable cover letter, and a signature PASS seal.</p>
         </div>
-        <button className="button button-gold" onClick={() => document.getElementById('vellon-pass')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
+        <button className="button button-gold" onClick={() => setActivePage('pass')}>
           Explore VÉLLON PASS <ArrowRight size={16}/>
         </button>
       </section>
 
-      <VellonPass form={form} />
+      <div className="pass-page-content">
+        <VellonPass form={form} />
+      </div>
+
+      <section className="plans-page" aria-labelledby="plans-title">
+        <div className="plans-heading">
+          <span className="eyebrow"><Crown size={14}/> MEMBERSHIP OPTIONS</span>
+          <h1 id="plans-title">Choose your <span>career toolkit.</span></h1>
+          <p>Start with the free CV builder. Explore VÉLLON PASS for a premium CV design and a matching editable cover letter.</p>
+        </div>
+
+        <div className="plans-grid">
+          <article className="plan-card">
+            <div className="plan-kicker">START HERE</div>
+            <h2>Free</h2>
+            <p className="plan-price">R0 <span>/ always</span></p>
+            <p className="plan-description">Create and export a professional CV without an account.</p>
+            <ul>
+              <li>CV editor and live preview</li>
+              <li>Personal, experience and education sections</li>
+              <li>Standard PDF export</li>
+              <li>CV import assistance where supported</li>
+            </ul>
+            <button className="button button-outline plan-button"
+              onClick={() => setActivePage('cv')}>Use free builder</button>
+          </article>
+
+          <article className="plan-card plan-card-pass">
+            <div className="plan-ribbon"><Crown size={14}/> PREMIUM DESIGN</div>
+            <h2>VÉLLON PASS</h2>
+            <p className="plan-price">Coming soon</p>
+            <p className="plan-description">A distinctive black-and-gold application package.</p>
+            <ul>
+              <li>Premium black-and-gold CV PDF</li>
+              <li>Matching editable cover letter</li>
+              <li>VÉLLON PASS design seal</li>
+              <li>PDF exports without an account</li>
+            </ul>
+            <button className="button button-gold plan-button"
+              onClick={() => setActivePage('pass')}>Explore PASS</button>
+            <p className="plan-footnote">Checkout and final pricing are not enabled yet. PASS is currently accessible without payment.</p>
+          </article>
+        </div>
+      </section>
 
       <section className="workspace">
         <div className="editor-panel">
