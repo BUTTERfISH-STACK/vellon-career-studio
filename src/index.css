@@ -478,3 +478,298 @@ main.app[data-page="dashboard"] .pass-promo {
     padding: 22px;
   }
 }
+
+/* VÉLLON PASS — editor styling and responsive layout */
+.pass-editor-layout,
+.pass-design-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.85fr);
+  gap: 24px;
+  align-items: start;
+  width: 100%;
+}
+
+.pass-editor-panel,
+.pass-export-card,
+.pass-experience-card,
+.pass-feature-card,
+.pass-preview-card,
+.pass-letter-card {
+  min-width: 0;
+  color: #f2f0eb;
+  background: #111110;
+  border: 1px solid #292825;
+  border-radius: 16px;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.pass-luxury-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 0;
+  border-bottom: 1px solid #292825;
+  margin-bottom: 24px;
+}
+
+.pass-brand-lockup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.pass-brand-icon,
+.pass-feature-icon,
+.pass-export-icon,
+.pass-accent-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #d8b56b;
+}
+
+.pass-brand-name {
+  color: #f5f0e5;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.pass-brand-subtitle,
+.pass-helper,
+.pass-export-warning,
+.pass-isolation-note {
+  color: #aaa69d;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.pass-eyebrow {
+  color: #d8b56b;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.pass-editor-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.pass-editor-panel h1,
+.pass-editor-panel h2,
+.pass-editor-panel h3,
+.pass-export-card h2,
+.pass-experience-card h2 {
+  color: #f5f0e5;
+}
+
+.pass-form-grid,
+.pass-overview-grid,
+.pass-export-grid,
+.pass-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.pass-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  margin-bottom: 16px;
+  color: #e9e4da;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.pass-field input,
+.pass-field select,
+.pass-field textarea,
+.pass-editor-panel input,
+.pass-editor-panel select,
+.pass-editor-panel textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding: 12px 14px;
+  color: #f2f0eb;
+  background: #090909;
+  border: 1px solid #38352e;
+  border-radius: 9px;
+  font: inherit;
+  line-height: 1.45;
+  outline: none;
+}
+
+.pass-field textarea,
+.pass-editor-panel textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.pass-field input:focus,
+.pass-field select:focus,
+.pass-field textarea:focus,
+.pass-editor-panel input:focus,
+.pass-editor-panel select:focus,
+.pass-editor-panel textarea:focus {
+  border-color: #d8b56b;
+  box-shadow: 0 0 0 3px rgb(216 181 107 / 14%);
+}
+
+.pass-editor-panel button,
+.pass-editor-actions button,
+.pass-export-card button {
+  min-height: 42px;
+  padding: 10px 16px;
+  color: #090909;
+  background: #d8b56b;
+  border: 1px solid #d8b56b;
+  border-radius: 9px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.pass-editor-panel button:hover,
+.pass-editor-actions button:hover,
+.pass-export-card button:hover {
+  filter: brightness(1.08);
+}
+
+.pass-header-status,
+.pass-live-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  width: fit-content;
+  padding: 6px 10px;
+  color: #d8b56b;
+  background: rgb(216 181 107 / 10%);
+  border: 1px solid rgb(216 181 107 / 28%);
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.pass-overview {
+  display: grid;
+  gap: 20px;
+}
+
+.pass-paper-body,
+.pass-letter-paper-body {
+  box-sizing: border-box;
+  min-width: 0;
+  padding: clamp(20px, 4vw, 40px);
+  color: #24221e;
+  background: #f8f5ee;
+  border-radius: 4px;
+  overflow-wrap: anywhere;
+  box-shadow: 0 12px 36px rgb(0 0 0 / 22%);
+}
+
+.pass-letter-paper-content {
+  color: #24221e;
+  line-height: 1.75;
+}
+
+.pass-letter-paper-content h1,
+.pass-letter-paper-content h2,
+.pass-letter-paper-content h3,
+.pass-paper-body h1,
+.pass-paper-body h2,
+.pass-paper-body h3 {
+  color: #171613;
+}
+
+.pass-export-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  text-align: center;
+}
+
+.pass-export-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  color: #aaa69d;
+  font-size: 0.85rem;
+}
+
+.pass-nav-arrow {
+  color: #d8b56b;
+}
+
+.pass-monogram {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  color: #090909;
+  background: #d8b56b;
+  border-radius: 12px;
+  font-weight: 900;
+}
+
+.pass-experience-top {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.pass-feature-link {
+  color: #d8b56b;
+  text-decoration: none;
+}
+
+.pass-feature-link:hover {
+  text-decoration: underline;
+}
+
+.pass-promo,
+.pass-suite,
+.pass-benefits {
+  color: #f2f0eb;
+}
+
+@media (max-width: 760px) {
+  .pass-editor-layout,
+  .pass-design-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pass-form-grid,
+  .pass-overview-grid,
+  .pass-export-grid,
+  .pass-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pass-editor-panel,
+  .pass-export-card,
+  .pass-experience-card,
+  .pass-feature-card,
+  .pass-preview-card,
+  .pass-letter-card {
+    padding: 16px;
+  }
+
+  .pass-luxury-header {
+    align-items: flex-start;
+  }
+}
