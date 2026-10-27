@@ -100,3 +100,64 @@ button{cursor:pointer}
 .cv-import-apply{margin-top:12px}
 .cv-import-spin{animation:cv-import-rotation 1s linear infinite}
 @keyframes cv-import-rotation{to{transform:rotate(360deg)}}
+
+/* VÉLLON PASS premium CV and cover-letter suite */
+.pass-promo{display:flex;align-items:center;justify-content:space-between;gap:24px;margin:0 0 30px;padding:26px;border:1px solid #6b552e;border-radius:7px;background:radial-gradient(ellipse at 85% 0%,#302513 0%,#15130f 42%,#0c0c0b 100%)}
+.pass-promo-copy{max-width:680px}
+.pass-promo h2,.pass-suite-heading h2{font:800 clamp(24px,3.3vw,38px)/1.15 Manrope,sans-serif;letter-spacing:-1px;margin:13px 0 9px;color:#f1eee5}
+.pass-promo h2 span,.pass-suite-heading h2 span{color:var(--gold)}
+.pass-promo p,.pass-suite-heading p{max-width:650px;margin:0;color:#aaa69b;font-size:13px;line-height:1.8}
+.pass-suite{scroll-margin-top:20px;margin:0 0 38px;padding:28px;border:1px solid #4b3d25;border-radius:8px;background:linear-gradient(145deg,#14130f,#0b0b0a 50%,#17130d)}
+.pass-suite-heading{display:flex;justify-content:space-between;align-items:center;gap:24px;margin-bottom:25px}
+.pass-suite-heading h2{font-size:clamp(30px,4vw,44px);letter-spacing:2px;margin:10px 0}
+.pass-seal-large{width:112px;height:112px;flex-shrink:0;border:1px solid var(--gold);border-radius:50%;outline:1px solid #8e713c;outline-offset:-7px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--gold);transform:rotate(-7deg);box-shadow:0 0 25px #d8b56b12}
+.pass-seal-large span{font:700 10px Manrope,sans-serif;letter-spacing:2px}
+.pass-seal-large strong{font:800 23px Manrope,sans-serif;letter-spacing:3px;margin:2px 0}
+.pass-seal-large small{font-size:5px;letter-spacing:1px}
+.pass-benefits{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:0 0 23px}
+.pass-benefits>div{display:flex;align-items:center;gap:11px;padding:15px;border:1px solid #302b20;border-radius:5px;background:#11110f}
+.pass-benefits svg{color:var(--gold);flex-shrink:0}
+.pass-benefits strong,.pass-benefits small{display:block}
+.pass-benefits strong{font-size:11px;color:#eee8db;margin-bottom:5px}
+.pass-benefits small{font-size:10px;color:#9d988c;line-height:1.5}
+.pass-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
+.pass-preview-card,.pass-letter-card{min-width:0;border:1px solid #302d25;border-radius:6px;background:#11110f;padding:17px}
+.pass-card-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:16px;color:var(--gold);font-size:9px;font-weight:800;letter-spacing:1.1px}
+.pass-card-heading span:first-child{display:flex;align-items:center;gap:7px}
+.pass-card-heading span:last-child{font-size:8px;color:#aaa18e}
+.pass-document{background:#080808;color:#eee9dd;border:1px solid #8b713e;box-shadow:0 8px 24px #0007;overflow:hidden}
+.pass-document-header{position:relative;padding:23px 18px 18px;background:linear-gradient(135deg,#080808,#18140d);border-bottom:2px solid var(--gold)}
+.pass-document-brand,.pass-letter-preview-brand{font:800 9px Manrope,sans-serif;letter-spacing:2px;color:var(--gold)}
+.pass-document-brand span{font-weight:500}
+.pass-document-seal{position:absolute;right:16px;top:18px;width:36px;height:36px;border:1px solid var(--gold);border-radius:50%;display:grid;place-items:center;color:var(--gold);font:800 15px Manrope,sans-serif}
+.pass-document-header h3{max-width:calc(100% - 42px);overflow-wrap:anywhere;font:800 clamp(18px,2.3vw,26px)/1.15 Manrope,sans-serif;color:var(--gold);margin:22px 0 7px}
+.pass-document-header>p{margin:0 0 10px;color:#f0eadc;font-size:10px}
+.pass-document-header>small{display:block;color:#b5ad9d;font-size:8px;line-height:1.7;overflow-wrap:anywhere}
+.pass-document-body{padding:19px 18px;font-size:9px;line-height:1.7;overflow-wrap:anywhere;min-height:180px}
+.pass-document-body section{margin:0 0 17px}
+.pass-document-body h4{margin:0 0 7px;padding-bottom:5px;border-bottom:1px solid #8b713e;color:var(--gold);font:800 9px Manrope,sans-serif;letter-spacing:1px;text-transform:uppercase}
+.pass-document-body p{white-space:pre-wrap;margin:0;color:#d9d3c6}
+.pass-document-body strong{display:block;color:#f3eee2;font-size:9px}
+.pass-document-body small{display:block;color:#aaa18f;margin:2px 0 5px;font-size:8px}
+.pass-empty-hint{color:#aaa18f}
+.pass-document-footer{display:flex;justify-content:space-between;gap:8px;padding:9px 13px;border-top:1px solid #493a22;color:var(--gold);font-size:7px;letter-spacing:1px}
+.pass-document-footer span{color:#9c927e;font-size:6px;text-align:right}
+.pass-action{width:100%;margin-top:15px;min-height:43px}
+.pass-card-intro{font-size:11px;line-height:1.7;color:#a9a397;margin:-3px 0 17px}
+.pass-letter-fields{display:grid;gap:13px}
+.pass-letter-fields .field input,.pass-letter-fields .field textarea{background:#090908;border-color:#383329}
+.pass-letter-preview{position:relative;overflow:hidden;margin-top:18px;padding:20px 17px 60px;min-height:290px;border:1px solid #6c5732;background:linear-gradient(145deg,#0a0a09,#17130d);color:#e7e0d2}
+.pass-letter-preview-title{font-size:8px;letter-spacing:1.5px;color:#9e9685;margin-bottom:19px}
+.pass-letter-preview-brand{font-size:11px;margin-bottom:12px}
+.pass-letter-preview-rule{height:1px;background:var(--gold);margin-bottom:14px}
+.pass-letter-preview>small{color:#a9a08e;font-size:9px}
+.pass-letter-preview>p{white-space:pre-wrap;overflow-wrap:anywhere;font-size:10px;line-height:1.7;margin:12px 0}
+.pass-letter-preview .pass-letter-body{font-size:10px;line-height:1.8}
+.pass-letter-stamp{position:absolute;right:15px;bottom:14px;width:74px;height:74px;border:1px solid var(--gold);outline:1px solid #8b713e;outline-offset:-5px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(-9deg);color:var(--gold)}
+.pass-letter-stamp span{font-size:7px;font-weight:800;letter-spacing:1px}
+.pass-letter-stamp strong{font:800 17px Manrope,sans-serif;letter-spacing:2px}
+.pass-letter-stamp small{font-size:4px;letter-spacing:.5px}
+.pass-disclaimer{display:flex;align-items:flex-start;gap:8px;margin:18px 0 0;color:#9d978a;font-size:10px;line-height:1.7}
+.pass-disclaimer svg{color:var(--gold);flex-shrink:0;margin-top:1px}
+@media(max-width:800px){.pass-promo{align-items:flex-start;flex-direction:column;padding:21px}.pass-suite{padding:18px}.pass-suite-heading{align-items:flex-start}.pass-seal-large{width:88px;height:88px}.pass-seal-large strong{font-size:19px}.pass-seal-large span{font-size:8px}.pass-seal-large small{font-size:4px}.pass-benefits{grid-template-columns:1fr}.pass-grid{grid-template-columns:1fr}}
+@media(max-width:390px){.pass-suite{padding:12px}.pass-suite-heading{gap:12px}.pass-seal-large{width:70px;height:70px;outline-offset:-5px}.pass-seal-large strong{font-size:15px}.pass-seal-large span{font-size:7px}.pass-seal-large small{font-size:3px;letter-spacing:.4px}.pass-document-header{padding:19px 13px 15px}.pass-document-body{padding:15px 13px}.pass-preview-card,.pass-letter-card{padding:12px}}

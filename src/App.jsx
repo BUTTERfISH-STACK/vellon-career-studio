@@ -1,9 +1,10 @@
 import CVImportPanel from "./CVImportPanel.jsx"
+import VellonPass from './VellonPass.jsx'
 import { useMemo, useState } from 'react'
 import {
   ArrowRight, FileText, Download, ShieldCheck, Sparkles,
   BriefcaseBusiness, GraduationCap, UserRound, Plus, Trash2,
-  Eye, ChartNoAxesCombined, Menu
+  Eye
 } from 'lucide-react'
 import { jsPDF } from 'jspdf'
 import './index.css'
@@ -20,7 +21,6 @@ const initialForm = {
 export default function App() {
   const [form, setForm] = useState(initialForm)
   const [activeTab, setActiveTab] = useState('personal')
-  const [showPreview, setShowPreview] = useState(false)
   const [notice, setNotice] = useState('')
 
   const update = (key, value) => setForm(old => ({ ...old, [key]: value }))
@@ -207,6 +207,19 @@ export default function App() {
           <span><BriefcaseBusiness size={16}/> Professional format</span>
         </div>
       </section>
+
+      <section className="pass-promo" aria-labelledby="pass-promo-title">
+        <div className="pass-promo-copy">
+          <span className="eyebrow"><Sparkles size={14}/> INTRODUCING THE PREMIUM TIER</span>
+          <h2 id="pass-promo-title">Make your next application <span>stand apart.</span></h2>
+          <p>Meet VÉLLON PASS: a black-and-gold CV, a matching editable cover letter, and a signature PASS seal.</p>
+        </div>
+        <button className="button button-gold" onClick={() => document.getElementById('vellon-pass')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
+          Explore VÉLLON PASS <ArrowRight size={16}/>
+        </button>
+      </section>
+
+      <VellonPass form={form} />
 
       <section className="workspace">
         <div className="editor-panel">
