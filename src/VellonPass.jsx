@@ -10,14 +10,14 @@ const STORAGE_KEY = 'vellon-pass-draft-v2'
 
 const themes = {
   obsidian: {
-    label: 'Obsidian',
+    label: 'Obsidian Luxury',
     paper: [13, 13, 13],
     text: [245, 241, 231],
     accent: [216, 181, 107],
     muted: [174, 166, 149]
   },
   ivory: {
-    label: 'Ivory',
+    label: 'Ivory Editorial',
     paper: [250, 247, 239],
     text: [37, 34, 29],
     accent: [145, 108, 43],
@@ -177,6 +177,35 @@ function exportPDF(kind, cv, letter, settings) {
     y += gap
   }
 
+  const centeredWrite = (value, baseSize, minSize, color, style = 'normal', gap = 0) => {
+    const text = String(value || '').trim()
+    if (!text) {
+      y += gap
+      return
+    }
+
+    let size = baseSize
+    doc.setFont('helvetica', style)
+
+    // Reduce the font size before allowing a long heading to wrap.
+    doc.setFontSize(size)
+    while (size > minSize && doc.getTextWidth(text) > width) {
+      size = Math.max(minSize, size - 0.5)
+      doc.setFontSize(size)
+    }
+
+    doc.setTextColor(...color)
+    const lines = doc.splitTextToSize(text, width)
+
+    for (const line of lines) {
+      if (y + size * 0.45 > bottom) nextPage()
+      doc.text(line, pageW / 2, y, { align: 'center', maxWidth: width })
+      y += Math.max(size * 0.48, 3.5)
+    }
+
+    y += gap
+  }
+
   const heading = value => {
     y += 2
     write(value.toUpperCase(), 10, palette.accent, 'bold', 2)
@@ -187,9 +216,12 @@ function exportPDF(kind, cv, letter, settings) {
   }
 
   if (kind === 'cv') {
-    write(cv.name, 23, palette.accent, 'bold', 1)
-    write(cv.title || 'Professional Profile', 11, palette.text, 'normal', 2)
-    write([cv.email, cv.phone, cv.location].filter(Boolean).join('  |  '), 8, palette.muted, 'normal', 5)
+    centeredWrite(cv.name, 23, 12, palette.accent, 'bold', 1)
+    centeredWrite(cv.title || 'Professional Profile', 11, 8, palette.text, 'normal', 2)
+    centeredWrite(
+      [cv.email, cv.phone, cv.location].filter(Boolean).join('  |  '),
+      8, 7, palette.muted, 'normal', 5
+    )
 
     if (cv.summary.trim()) {
       heading('Professional Profile')
@@ -349,7 +381,15 @@ export default function VellonPass({ form = {} }) {
             <div><span className="vp2-kicker">YOUR DOCUMENT WORKSPACE</span>
               <h3>Make a stronger first impression.</h3>
               <p>Your own CV and cover-letter workspace. Drafts save locally on this device.</p>
-              <button type="button" className="vp2-primary" onClick={() => setView('cv')}>Open CV Studio <ArrowRight size={16}/></button>
+              <div className="vp2-home-actions">
+                <button type="button" className="vp2-primary" onClick={() => setView('cv')}>
+                  Open CV Studio <ArrowRight size={16}/>
+                </button>
+                <button type="button" className="vp2-secondary vp2-quick-export"
+                  onClick={() => exportPDF('cv', cv, letter, settings)}>
+                  <Download size={16}/> Download CV PDF
+                </button>
+              </div>
             </div>
             <div className="vp2-hero-icon"><Crown size={34}/><span>V / P</span></div>
           </div>

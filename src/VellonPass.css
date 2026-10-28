@@ -153,3 +153,76 @@
   .vp2-paper { padding:17px; }
   .vp2-export-card { padding:17px; }
 }
+
+
+/* VÉLLON PASS — centered, overflow-safe document headings */
+.vp2-paper h2 {
+  width: 100%;
+  max-width: 100%;
+  text-align: center;
+  overflow-wrap: anywhere;
+  word-break: normal;
+  hyphens: auto;
+}
+
+.vp2-paper .vp2-paper-title {
+  width: 100%;
+  max-width: 100%;
+  text-align: center;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+.vp2-paper .vp2-paper-contact {
+  width: 100%;
+  max-width: 100%;
+  text-align: center;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+.vp2-paper {
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.vp2-home-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.vp2-home-actions .vp2-primary,
+.vp2-home-actions .vp2-secondary {
+  margin-top: 0;
+}
+
+.vp2-quick-export {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+@media (max-width: 600px) {
+  .vp2-home-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .vp2-home-actions button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .vp2-paper h2 {
+    font-size: clamp(19px, 6vw, 27px);
+  }
+
+  .vp2-paper footer {
+    flex-wrap: wrap;
+    overflow-wrap: anywhere;
+  }
+}
