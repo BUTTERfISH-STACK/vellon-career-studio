@@ -1,5 +1,5 @@
 import CVImportPanel from "./CVImportPanel.jsx"
-import VellonPass from './VellonPass.jsx'
+import VellonPaywall from './VellonPaywall.jsx'
 import { useMemo, useState } from 'react'
 import {
   ArrowRight, FileText, Download, ShieldCheck, Sparkles,
@@ -266,7 +266,7 @@ export default function App() {
       </section>
 
       <div className="pass-page-content">
-        <VellonPass form={form} />
+        <VellonPaywall />
       </div>
 
       <section className="plans-page" aria-labelledby="plans-title">
@@ -295,8 +295,8 @@ export default function App() {
           <article className="plan-card plan-card-pass">
             <div className="plan-ribbon"><Crown size={14}/> PREMIUM DESIGN</div>
             <h2>VÉLLON PASS</h2>
-            <p className="plan-price">Coming soon</p>
-            <p className="plan-description">A distinctive black-and-gold application package.</p>
+            <p className="plan-price">R29.99 <span>/ 24 hours</span></p>
+            <p className="plan-description">One payment for a 24-hour premium CV redo window. No subscription.</p>
             <ul>
               <li>Premium black-and-gold CV PDF</li>
               <li>Matching editable cover letter</li>
@@ -305,7 +305,7 @@ export default function App() {
             </ul>
             <button className="button button-gold plan-button"
               onClick={() => setActivePage('pass')}>Explore PASS</button>
-            <p className="plan-footnote">Checkout and final pricing are not enabled yet. PASS is currently accessible without payment.</p>
+            <p className="plan-footnote">Yoco checkout is not connected yet. Payment verification will be required before PASS access is granted.</p>
           </article>
         </div>
       </section>
