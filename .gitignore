@@ -34,3 +34,6 @@ dist-ssr
 *.backup-*
 *.before-*
 *.pre-*
+.env.local
+.env.*.local
+.neon
