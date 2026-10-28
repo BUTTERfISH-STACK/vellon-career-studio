@@ -226,3 +226,48 @@
     overflow-wrap: anywhere;
   }
 }
+
+/* PASS theme cards: prevent theme descriptions overflowing */
+.vp2-themes button {
+  min-width: 0;
+  grid-template-columns: 42px minmax(0, 1fr) 18px;
+  column-gap: 10px;
+  box-sizing: border-box;
+}
+
+.vp2-themes button strong,
+.vp2-themes button small {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: normal;
+  white-space: normal;
+  line-height: 1.5;
+}
+
+.vp2-themes button strong {
+  font-size: clamp(11px, 2.5vw, 12px);
+}
+
+.vp2-themes button small {
+  display: block;
+  font-size: 10px;
+}
+
+.vp2-themes button svg {
+  min-width: 0;
+  justify-self: end;
+}
+
+@media (max-width: 380px) {
+  .vp2-themes button {
+    grid-template-columns: 34px minmax(0, 1fr) 16px;
+    gap: 6px 8px;
+    padding: 12px;
+  }
+
+  .vp2-swatch {
+    width: 34px;
+    height: 34px;
+  }
+}
