@@ -169,6 +169,37 @@ export default function App() {
 
       section('Education', form.education)
       const filename = form.name.trim().replace(/[^a-z0-9_-]+/gi, '-').slice(0, 60)
+      // VELLON FREE EDITION STAMP
+      // Reserve a clean footer area so CV content does not collide with the mark.
+      const stampWidth = 39
+      const stampHeight = 11
+      const stampX = pageWidth - margin - stampWidth
+      const stampY = 280
+
+      // Fine rectangular frame: deliberately no circular badge.
+      doc.setDrawColor(184, 148, 79)
+      doc.setLineWidth(0.3)
+      doc.rect(stampX, stampY, stampWidth, stampHeight, 'S')
+
+      doc.setTextColor(126, 99, 52)
+      doc.setFont('helvetica', 'bold')
+      doc.setFontSize(8)
+      doc.text('VÉLLON', stampX + 3, stampY + 4.8)
+
+      doc.setFont('helvetica', 'normal')
+      doc.setFontSize(5)
+      doc.setTextColor(115, 107, 91)
+      doc.text('FREE EDITION', stampX + 3, stampY + 8.3)
+
+      doc.setDrawColor(184, 148, 79)
+      doc.setLineWidth(0.45)
+      doc.line(stampX + 27, stampY + 2.5, stampX + 27, stampY + 8.5)
+
+      doc.setFont('helvetica', 'bold')
+      doc.setFontSize(5.5)
+      doc.setTextColor(126, 99, 52)
+      doc.text('V.', stampX + 30, stampY + 6.8)
+
       doc.save(`${filename || 'CV'}-Vellon.pdf`)
       setNotice('Your CV export was generated. Check your Downloads.')
     } catch (error) {
@@ -374,6 +405,14 @@ export default function App() {
               <h3>Experience</h3>
               {form.experience.some(j => j.role || j.company || j.details) ? form.experience.filter(j => j.role || j.company || j.details).map(j => <div className="preview-job" key={j.id}><strong>{j.role || 'Position'}{j.company ? ` — ${j.company}` : ''}</strong>{j.dates && <small>{j.dates}</small>}<p>{j.details}</p></div>) : <p className="placeholder">Your professional experience will appear here.</p>}
               {form.education && <><h3>Education</h3><p>{form.education}</p></>}
+            </div>
+            <div className="free-edition-stamp-wrap" aria-label="Vellon free edition watermark">
+              <div className="free-edition-stamp">
+                <span className="free-edition-stamp-wordmark">VÉLLON</span>
+                <span className="free-edition-stamp-divider" />
+                <span className="free-edition-stamp-label">FREE EDITION</span>
+                <span className="free-edition-stamp-monogram">V.</span>
+              </div>
             </div>
           </article>
           <div className="preview-note"><ShieldCheck size={15}/> Review all details before sending your CV.</div>

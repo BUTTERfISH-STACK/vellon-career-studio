@@ -773,3 +773,65 @@ main.app[data-page="dashboard"] .pass-promo {
     align-items: flex-start;
   }
 }
+
+
+/* VÉLLON FREE EDITION — restrained luxury wordmark */
+.free-edition-stamp-wrap {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  margin-top: 25px;
+  padding: 0 0 3px;
+}
+
+.free-edition-stamp {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 150px;
+  padding: 8px 10px;
+  border: 1px solid #b99856;
+  background: linear-gradient(115deg, #fffdf8, #f4efe3);
+  color: #745b30;
+  box-shadow: 0 2px 8px #17120a0a;
+}
+
+.free-edition-stamp-wordmark {
+  font-family: Manrope, sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  white-space: nowrap;
+}
+
+.free-edition-stamp-divider {
+  width: 1px;
+  height: 20px;
+  flex: 0 0 1px;
+  background: #c7ad78;
+}
+
+.free-edition-stamp-label {
+  font-family: "DM Sans", sans-serif;
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 1.1px;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.free-edition-stamp-monogram {
+  margin-left: auto;
+  padding-left: 5px;
+  border-left: 1px solid #e0d2b6;
+  color: #a1844c;
+  font-family: Manrope, sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+@media print {
+  .free-edition-stamp-wrap {
+    break-inside: avoid;
+  }
+}
