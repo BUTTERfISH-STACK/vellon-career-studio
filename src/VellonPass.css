@@ -227,47 +227,71 @@
   }
 }
 
-/* PASS theme cards: prevent theme descriptions overflowing */
+/* PASS theme cards — clean, aligned editorial layout */
 .vp2-themes button {
-  min-width: 0;
+  display: grid;
   grid-template-columns: 42px minmax(0, 1fr) 18px;
-  column-gap: 10px;
+  grid-template-rows: auto auto;
+  align-items: center;
+  column-gap: 12px;
+  row-gap: 4px;
+  min-width: 0;
   box-sizing: border-box;
+  padding: 15px;
 }
 
-.vp2-themes button strong,
-.vp2-themes button small {
-  min-width: 0;
-  max-width: 100%;
-  overflow-wrap: anywhere;
-  word-break: normal;
-  white-space: normal;
-  line-height: 1.5;
+.vp2-themes .vp2-swatch {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  align-self: center;
+  width: 42px;
+  height: 42px;
 }
 
 .vp2-themes button strong {
-  font-size: clamp(11px, 2.5vw, 12px);
+  grid-column: 2;
+  grid-row: 1;
+  align-self: end;
+  min-width: 0;
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.35;
+  overflow-wrap: break-word;
+  word-break: normal;
 }
 
 .vp2-themes button small {
+  grid-column: 2;
+  grid-row: 2;
+  align-self: start;
   display: block;
+  min-width: 0;
+  margin: 0;
   font-size: 10px;
+  line-height: 1.4;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: normal;
 }
 
 .vp2-themes button svg {
-  min-width: 0;
+  grid-column: 3;
+  grid-row: 1 / span 2;
   justify-self: end;
+  align-self: center;
+  width: 18px;
+  min-width: 18px;
 }
 
 @media (max-width: 380px) {
   .vp2-themes button {
-    grid-template-columns: 34px minmax(0, 1fr) 16px;
-    gap: 6px 8px;
+    grid-template-columns: 36px minmax(0, 1fr) 18px;
+    column-gap: 9px;
     padding: 12px;
   }
 
-  .vp2-swatch {
-    width: 34px;
-    height: 34px;
+  .vp2-themes .vp2-swatch {
+    width: 36px;
+    height: 36px;
   }
 }
