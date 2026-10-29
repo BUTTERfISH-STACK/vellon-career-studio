@@ -360,7 +360,39 @@ export default function App() {
             Create my CV <Download size={16}/>
           </button>
         </div>
-      </section>
+
+        <aside className="advertiser-banner" aria-label="Advertising opportunity">
+          <div className="advertiser-banner-copy">
+            <span className="advertiser-eyebrow">VÉLLON CAREER STUDIO · PARTNER OPPORTUNITY</span>
+            <h2>YOUR BRAND. OUR AUDIENCE.</h2>
+            <p className="advertiser-banner-prompt">Show your ad here.</p>
+            <p className="advertiser-banner-description">
+              Put your business in front of people building their next career move.
+            </p>
+            <a
+              className="advertiser-banner-link"
+              href="https://wa.me/27844596054?text=Hi%20V%C3%89LLON%20Career%20Studio%2C%20I%27m%20interested%20in%20advertising%20on%20your%20website."
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Enquire about advertising with VÉLLON Career Studio on WhatsApp"
+            >
+              ADVERTISE WITH VÉLLON <span aria-hidden="true">↗</span>
+            </a>
+          </div>
+
+          <div className="advertiser-banner-placeholder" aria-hidden="true">
+            <span className="advertiser-placeholder-mark">V.</span>
+            <span>YOUR LOGO</span>
+            <span className="advertiser-placeholder-divider" />
+            <span>YOUR MESSAGE</span>
+          </div>
+
+          <div className="advertiser-banner-footnote">
+            A space for selected brands and partners
+          </div>
+        </aside>
+
+</section>
       )}
 
 {activePage === 'cv' && (
