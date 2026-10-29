@@ -1,10 +1,9 @@
 import CVImportPanel from "./CVImportPanel.jsx"
-import VellonReferrals from './VellonReferrals.jsx'
 import { initializeReferralTracking, trackStandardExport } from './referrals.js'
 import { useEffect, useMemo, useState } from 'react'
 import {
   FileText, Download, ShieldCheck, Sparkles,
-  Home, Crown,
+  Home,
   BriefcaseBusiness, GraduationCap, UserRound, Plus, Trash2,
   Eye
 } from 'lucide-react'
@@ -237,23 +236,15 @@ export default function App() {
           <button className={activePage === 'dashboard' ? 'active' : ''}
             aria-current={activePage === 'dashboard' ? 'page' : undefined}
             onClick={() => setActivePage('dashboard')}>
-            <Home size={18}/><span>Dashboard</span>
+            <Home size={18}/><span>Home</span>
           </button>
           <button className={activePage === 'cv' ? 'active' : ''}
             aria-current={activePage === 'cv' ? 'page' : undefined}
             onClick={() => setActivePage('cv')}>
-            <FileText size={18}/><span>My CV</span>
+            <FileText size={18}/><span>Free CV Builder</span>
           </button>
         </nav>
 
-        <div className="sidebar-caption">REWARDS</div>
-        <nav className="sidebar-nav" aria-label="Premium">
-          <button className={activePage === 'pass' ? 'active pass-nav' : 'pass-nav'}
-            aria-current={activePage === 'pass' ? 'page' : undefined}
-            onClick={() => setActivePage('pass')}>
-            <Crown size={18}/><span>Referral Rewards</span>
-          </button>
-        </nav>
 
         <div className="sidebar-bottom">
           <span className="sidebar-status-dot"></span>
@@ -262,37 +253,117 @@ export default function App() {
         </div>
       </aside>
       <header className="topbar">
-        <a className="brand" href="#" aria-label="Vellon Career Studio home">
+        <a className="brand" href="#" aria-label="Vellon Career Studio home"
+          onClick={(e) => {
+            e.preventDefault()
+            setActivePage('dashboard')
+          }}>
           <span className="brand-mark">V.</span>
           <span>VÉLLON <small>CAREER STUDIO</small></span>
         </a>
         <div className="top-actions">
           <span className="free-label"><ShieldCheck size={15}/> FREE CV BUILDER</span>
-          {activePage !== 'pass' && <button className="button button-gold" onClick={exportPDF}><Download size={16}/> Export PDF</button>}
+          {activePage === 'cv' ? (
+            <button className="button button-gold" onClick={exportPDF}>
+              <Download size={16}/> Export PDF
+            </button>
+          ) : (
+            <button className="button button-gold" onClick={() => {
+              setActivePage('cv')
+              setActiveTab('personal')
+            }}>
+              <FileText size={16}/> Build my CV
+            </button>
+          )}
         </div>
       </header>
 
-      {activePage !== 'pass' && (
-      <section className="hero">
-        <div className="eyebrow"><Sparkles size={14}/> YOUR NEXT CHAPTER STARTS HERE</div>
-        <h1>Your experience.<br/><span>Your next opportunity.</span></h1>
-        <p>Create a professional, ATS-conscious CV in minutes. No account required. Your information stays in this browser until you export it.</p>
+      {activePage === 'dashboard' && (
+      <section className="hero home-hero">
+        <div className="eyebrow">
+          <Sparkles size={14}/> A BETTER CV. A FRESH START.
+        </div>
+
+        <h1>Make your next opportunity <span>easier to reach.</span></h1>
+
+        <p className="home-lead">
+          Your skills and experience deserve to be presented clearly.
+          Build a professional CV, review it as you go, and export a PDF
+          you can use when applying for your next opportunity.
+        </p>
+
+        <div className="home-actions">
+          <button className="button button-gold" onClick={() => {
+            setActivePage('cv')
+            setActiveTab('personal')
+          }}>
+            <FileText size={17}/> Build my free CV
+          </button>
+          <button className="button button-outline" onClick={() => {
+            setActivePage('cv')
+            setActiveTab('personal')
+          }}>
+            Start with my details <Eye size={16}/>
+          </button>
+        </div>
+
         <div className="hero-proof">
           <span><ShieldCheck size={16}/> Free to use</span>
           <span><FileText size={16}/> PDF export</span>
           <span><BriefcaseBusiness size={16}/> Professional format</span>
         </div>
-      </section>
 
-      )}
+        <div className="home-feature-grid">
+          <article className="home-feature">
+            <span className="home-feature-icon"><FileText size={20}/></span>
+            <h2>A CV that is yours</h2>
+            <p>Add your contact details, work history, education, skills,
+              and professional summary.</p>
+          </article>
 
-      {activePage === 'pass' && (
-        <div className="pass-page-content">
-          <VellonReferrals />
+          <article className="home-feature">
+            <span className="home-feature-icon"><Eye size={20}/></span>
+            <h2>See it take shape</h2>
+            <p>Preview your CV while you edit it, so you can check the
+              details before exporting.</p>
+          </article>
+
+          <article className="home-feature">
+            <span className="home-feature-icon"><ShieldCheck size={20}/></span>
+            <h2>Start without an account</h2>
+            <p>Use the builder without signing up. Your CV details stay
+              in the current browser session unless you export them.</p>
+          </article>
         </div>
+
+        <div className="home-how">
+          <div>
+            <span className="eyebrow">THREE SIMPLE STEPS</span>
+            <h2>From your experience to your next application.</h2>
+          </div>
+          <ol>
+            <li><span>01</span><div><strong>Add your details</strong><p>Enter your skills, experience, and education.</p></div></li>
+            <li><span>02</span><div><strong>Review your CV</strong><p>Check the live preview and correct any mistakes.</p></div></li>
+            <li><span>03</span><div><strong>Export your PDF</strong><p>Save your CV and prepare it for your applications.</p></div></li>
+          </ol>
+        </div>
+
+        <div className="home-final-cta">
+          <div>
+            <h2>Your next chapter can start today.</h2>
+            <p>Build your CV for free. No account required.</p>
+          </div>
+          <button className="button button-gold" onClick={() => {
+            setActivePage('cv')
+            setActiveTab('personal')
+          }}>
+            Create my CV <Download size={16}/>
+          </button>
+        </div>
+      </section>
       )}
 
-      {activePage !== 'pass' && (
+{activePage === 'cv' && (
       <section className="workspace">
         <div className="editor-panel">
           <div className="panel-heading">

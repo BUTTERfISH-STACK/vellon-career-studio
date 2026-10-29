@@ -427,7 +427,7 @@ main.app[data-page="dashboard"] .pass-promo {
     border-right: 0;
     border-top: 1px solid rgba(216,181,107,.35);
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     align-items: stretch;
     column-gap: 8px;
     background: rgba(9,9,9,.97);
@@ -834,5 +834,187 @@ main.app[data-page="dashboard"] .pass-promo {
 @media print {
   .free-edition-stamp-wrap {
     break-inside: avoid;
+  }
+}
+
+
+/* VÉLLON Career Studio — focused two-page landing experience */
+.home-hero {
+  width: 100%;
+  max-width: 1100px;
+  box-sizing: border-box;
+  padding-top: 64px;
+  padding-bottom: 54px;
+}
+.home-hero h1 {
+  max-width: 900px;
+  font-size: clamp(38px, 5.4vw, 66px);
+}
+.home-lead {
+  max-width: 710px;
+}
+.home-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 25px;
+}
+.home-actions .button {
+  min-height: 46px;
+}
+.home-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 44px;
+}
+.home-feature {
+  min-width: 0;
+  padding: 23px;
+  border: 1px solid rgba(216,181,107,.2);
+  border-radius: 14px;
+  background: linear-gradient(145deg, #11110f, #0b0b0b);
+}
+.home-feature-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  margin-bottom: 17px;
+  border: 1px solid rgba(216,181,107,.34);
+  border-radius: 11px;
+  color: var(--gold);
+  background: rgba(216,181,107,.07);
+}
+.home-feature h2 {
+  margin: 0 0 9px;
+  color: #f0ece3;
+  font: 700 16px/1.4 Manrope, sans-serif;
+}
+.home-feature p {
+  margin: 0;
+  color: #aaa79f;
+  font-size: 12px;
+  line-height: 1.8;
+}
+.home-how {
+  display: grid;
+  grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+  gap: 38px;
+  margin-top: 56px;
+  padding: 30px;
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 15px;
+  background: #0c0c0b;
+}
+.home-how h2,
+.home-final-cta h2 {
+  margin: 12px 0 0;
+  color: #f3eee4;
+  font: 750 clamp(22px, 3vw, 30px)/1.25 Manrope, sans-serif;
+  letter-spacing: -.7px;
+}
+.home-how ol {
+  display: grid;
+  gap: 20px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.home-how li {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+.home-how li > span {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  border: 1px solid rgba(216,181,107,.35);
+  border-radius: 9px;
+  color: var(--gold);
+  font-size: 11px;
+  font-weight: 800;
+}
+.home-how li strong {
+  color: #eee9df;
+  font-size: 13px;
+}
+.home-how li p {
+  margin: 5px 0 0;
+  color: #a9a49a;
+  font-size: 12px;
+  line-height: 1.65;
+}
+.home-final-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 18px;
+  padding: 27px 30px;
+  border: 1px solid rgba(216,181,107,.34);
+  border-radius: 14px;
+  background: linear-gradient(110deg, rgba(216,181,107,.11), rgba(216,181,107,.025));
+}
+.home-final-cta h2 {
+  margin: 0;
+  font-size: clamp(20px, 2.5vw, 27px);
+}
+.home-final-cta p {
+  margin: 8px 0 0;
+  color: #b4aea2;
+  font-size: 12px;
+}
+.home-final-cta .button {
+  flex: 0 0 auto;
+}
+@media (max-width: 900px) {
+  .home-feature-grid {
+    grid-template-columns: 1fr;
+  }
+  .home-feature {
+    padding: 19px;
+  }
+  .home-feature-icon {
+    margin-bottom: 12px;
+  }
+  .home-how {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+}
+@media (max-width: 760px) {
+  .home-hero {
+    padding-top: 43px;
+    padding-bottom: 35px;
+  }
+  .home-hero h1 {
+    font-size: clamp(34px, 9vw, 49px);
+  }
+  .home-actions {
+    flex-direction: column;
+  }
+  .home-actions .button {
+    width: 100%;
+    justify-content: center;
+  }
+  .home-feature-grid {
+    margin-top: 31px;
+  }
+  .home-how {
+    margin-top: 32px;
+    padding: 21px;
+  }
+  .home-final-cta {
+    align-items: stretch;
+    flex-direction: column;
+    padding: 22px;
+  }
+  .home-final-cta .button {
+    width: 100%;
+    justify-content: center;
   }
 }
