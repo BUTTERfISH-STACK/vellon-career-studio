@@ -427,8 +427,9 @@ main.app[data-page="dashboard"] .pass-promo {
     border-right: 0;
     border-top: 1px solid rgba(216,181,107,.35);
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     align-items: stretch;
+    column-gap: 8px;
     background: rgba(9,9,9,.97);
     backdrop-filter: blur(14px);
   }
@@ -443,9 +444,9 @@ main.app[data-page="dashboard"] .pass-promo {
     justify-content: center;
     gap: 4px;
     min-width: 0;
-    min-height: 52px;
-    padding: 5px 2px;
-    border-radius: 7px;
+    min-height: 56px;
+    padding: 6px 3px;
+    border-radius: 9px;
     font-size: 9px;
     text-align: center;
     white-space: nowrap;

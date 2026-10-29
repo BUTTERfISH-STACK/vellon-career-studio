@@ -1,0 +1,74 @@
+.referral-page {
+  width: min(100%, 920px);
+  margin: 0 auto;
+  padding: 28px clamp(16px, 4vw, 42px) 34px;
+  color: #f2eee5;
+}
+.referral-header,.referral-brand,.referral-progress-top,.referral-stats,
+.referral-link-row,.referral-reward-card,.referral-kicker,.referral-link-card h2 {
+  display: flex;
+  align-items: center;
+}
+.referral-header { justify-content: space-between; gap: 16px; margin-bottom: 44px; }
+.referral-brand { gap: 11px; font-weight: 800; letter-spacing: .12em; }
+.referral-brand > span {
+  display:grid; place-items:center; width:38px; height:38px; border:1px solid #d8b56b;
+  border-radius:11px; color:#d8b56b; font-size:20px;
+}
+.referral-brand small { display:block; margin-top:3px; color:#a8a39a; font-size:9px; letter-spacing:.19em; }
+.referral-free-badge,.referral-label,.referral-kicker {
+  color:#d8b56b; font-size:10px; font-weight:800; letter-spacing:.13em;
+}
+.referral-free-badge { border:1px solid #51442a; border-radius:99px; padding:8px 11px; }
+.referral-kicker { gap:8px; }
+.referral-hero { margin-bottom:28px; }
+.referral-hero h1 { margin:17px 0 14px; font-size:clamp(32px,5vw,52px); line-height:1.08; letter-spacing:-.045em; }
+.referral-hero h1 span { color:#d8b56b; }
+.referral-hero p,.referral-link-card > p,.referral-reward-copy p,.referral-rules p {
+  max-width:680px; color:#aaa69d; line-height:1.7; font-size:14px;
+}
+.referral-progress-card,.referral-link-card,.referral-reward-card,.referral-rules {
+  background:#101010; border:1px solid #292929; border-radius:18px; padding:22px; margin-top:16px;
+}
+.referral-progress-top { justify-content:space-between; }
+.referral-number { font-size:34px; font-weight:800; margin-top:8px; }
+.referral-number span { color:#99948a; font-size:13px; font-weight:500; }
+.referral-icon,.referral-reward-icon { display:grid; place-items:center; width:46px; height:46px; border-radius:14px; background:#211b10; color:#d8b56b; }
+.referral-progress-track { height:7px; margin:20px 0 10px; background:#292929; border-radius:99px; overflow:hidden; }
+.referral-progress-track span { display:block; height:100%; background:#d8b56b; border-radius:99px; transition:width .2s ease; }
+.referral-progress-card > p { color:#aaa69d; font-size:12px; }
+.referral-stats { gap:12px; margin-top:20px; }
+.referral-stats > div { flex:1; padding:13px; background:#171717; border-radius:12px; min-width:0; }
+.referral-stats strong,.referral-stats span { display:block; }
+.referral-stats strong { font-size:22px; }
+.referral-stats span { color:#99948a; font-size:11px; margin-top:4px; }
+.referral-link-card h2 { gap:9px; margin:0; font-size:17px; }
+.referral-link-row { gap:9px; margin-top:18px; }
+.referral-link-row input { min-width:0; flex:1; padding:12px; background:#080808; color:#e8e3d9; border:1px solid #343434; border-radius:10px; }
+.referral-link-row button,.referral-reward-copy button {
+  display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:12px 15px;
+  background:#d8b56b; color:#111; border:0; border-radius:10px; font-weight:800; cursor:pointer;
+}
+.referral-refresh { display:inline-flex; align-items:center; gap:7px; margin-top:14px; padding:7px 0; color:#c9c1b3; background:none; border:0; cursor:pointer; }
+.referral-refresh:disabled { opacity:.5; cursor:wait; }
+.referral-reward-card { gap:16px; border-color:#6b562b; }
+.referral-reward-copy { flex:1; min-width:0; }
+.referral-reward-copy h2 { margin:8px 0; font-size:21px; }
+.referral-reward-copy p { margin:0 0 15px; }
+.referral-reward-check { color:#d8b56b; }
+.referral-rules h2 { margin:0 0 12px; font-size:18px; }
+.referral-rules ol { padding-left:20px; color:#ddd6c9; line-height:1.9; font-size:13px; }
+.referral-rules p { font-size:12px; }
+.referral-message { padding:12px 14px; border:1px solid #51442a; border-radius:10px; color:#d8b56b; font-size:13px; }
+.referral-error { border-color:#704444; color:#efb1a9; }
+.referral-footer { margin-top:28px; color:#777168; text-align:center; font-size:10px; letter-spacing:.12em; }
+.referral-workspace { margin-top:20px; }
+@media (max-width:560px) {
+  .referral-header { margin-bottom:32px; }
+  .referral-stats { flex-wrap:wrap; }
+  .referral-stats > div { flex-basis:28%; }
+  .referral-link-row { align-items:stretch; flex-direction:column; }
+  .referral-link-row button { width:100%; }
+  .referral-reward-card { align-items:flex-start; }
+  .referral-reward-check { display:none; }
+}

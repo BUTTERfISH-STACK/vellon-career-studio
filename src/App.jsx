@@ -1,9 +1,10 @@
 import CVImportPanel from "./CVImportPanel.jsx"
-import VellonPaywall from './VellonPaywall.jsx'
-import { useMemo, useState } from 'react'
+import VellonReferrals from './VellonReferrals.jsx'
+import { initializeReferralTracking, trackStandardExport } from './referrals.js'
+import { useEffect, useMemo, useState } from 'react'
 import {
-  ArrowRight, FileText, Download, ShieldCheck, Sparkles,
-  Home, Crown, CreditCard,
+  FileText, Download, ShieldCheck, Sparkles,
+  Home, Crown,
   BriefcaseBusiness, GraduationCap, UserRound, Plus, Trash2,
   Eye
 } from 'lucide-react'
@@ -24,6 +25,8 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('personal')
   const [activePage, setActivePage] = useState('dashboard')
   const [notice, setNotice] = useState('')
+
+  useEffect(() => { initializeReferralTracking() }, [])
 
   const update = (key, value) => setForm(old => ({ ...old, [key]: value }))
 
@@ -201,6 +204,7 @@ export default function App() {
       doc.text('V.', stampX + 30, stampY + 6.8)
 
       doc.save(`${filename || 'CV'}-Vellon.pdf`)
+      trackStandardExport()
       setNotice('Your CV export was generated. Check your Downloads.')
     } catch (error) {
       console.error(error)
@@ -242,18 +246,12 @@ export default function App() {
           </button>
         </nav>
 
-        <div className="sidebar-caption">PREMIUM</div>
+        <div className="sidebar-caption">REWARDS</div>
         <nav className="sidebar-nav" aria-label="Premium">
           <button className={activePage === 'pass' ? 'active pass-nav' : 'pass-nav'}
             aria-current={activePage === 'pass' ? 'page' : undefined}
             onClick={() => setActivePage('pass')}>
-            <Crown size={18}/><span>VÉLLON PASS</span>
-            <span className="sidebar-tag">PASS</span>
-          </button>
-          <button className={activePage === 'plans' ? 'active' : ''}
-            aria-current={activePage === 'plans' ? 'page' : undefined}
-            onClick={() => setActivePage('plans')}>
-            <CreditCard size={18}/><span>Plans &amp; Pricing</span>
+            <Crown size={18}/><span>Referral Rewards</span>
           </button>
         </nav>
 
@@ -270,10 +268,11 @@ export default function App() {
         </a>
         <div className="top-actions">
           <span className="free-label"><ShieldCheck size={15}/> FREE CV BUILDER</span>
-          <button className="button button-gold" onClick={exportPDF}><Download size={16}/> Export PDF</button>
+          {activePage !== 'pass' && <button className="button button-gold" onClick={exportPDF}><Download size={16}/> Export PDF</button>}
         </div>
       </header>
 
+      {activePage !== 'pass' && (
       <section className="hero">
         <div className="eyebrow"><Sparkles size={14}/> YOUR NEXT CHAPTER STARTS HERE</div>
         <h1>Your experience.<br/><span>Your next opportunity.</span></h1>
@@ -285,62 +284,15 @@ export default function App() {
         </div>
       </section>
 
-      <section className="pass-promo" aria-labelledby="pass-promo-title">
-        <div className="pass-promo-copy">
-          <span className="eyebrow"><Sparkles size={14}/> INTRODUCING THE PREMIUM TIER</span>
-          <h2 id="pass-promo-title">Make your next application <span>stand apart.</span></h2>
-          <p>Meet VÉLLON PASS: a black-and-gold CV, a matching editable cover letter, and a signature PASS seal.</p>
+      )}
+
+      {activePage === 'pass' && (
+        <div className="pass-page-content">
+          <VellonReferrals />
         </div>
-        <button className="button button-gold" onClick={() => setActivePage('pass')}>
-          Explore VÉLLON PASS <ArrowRight size={16}/>
-        </button>
-      </section>
+      )}
 
-      <div className="pass-page-content">
-        <VellonPaywall />
-      </div>
-
-      <section className="plans-page" aria-labelledby="plans-title">
-        <div className="plans-heading">
-          <span className="eyebrow"><Crown size={14}/> MEMBERSHIP OPTIONS</span>
-          <h1 id="plans-title">Choose your <span>career toolkit.</span></h1>
-          <p>Start with the free CV builder. Explore VÉLLON PASS for a premium CV design and a matching editable cover letter.</p>
-        </div>
-
-        <div className="plans-grid">
-          <article className="plan-card">
-            <div className="plan-kicker">START HERE</div>
-            <h2>Free</h2>
-            <p className="plan-price">R0 <span>/ always</span></p>
-            <p className="plan-description">Create and export a professional CV without an account.</p>
-            <ul>
-              <li>CV editor and live preview</li>
-              <li>Personal, experience and education sections</li>
-              <li>Standard PDF export</li>
-              <li>CV import assistance where supported</li>
-            </ul>
-            <button className="button button-outline plan-button"
-              onClick={() => setActivePage('cv')}>Use free builder</button>
-          </article>
-
-          <article className="plan-card plan-card-pass">
-            <div className="plan-ribbon"><Crown size={14}/> PREMIUM DESIGN</div>
-            <h2>VÉLLON PASS</h2>
-            <p className="plan-price">R29.99 <span>/ 24 hours</span></p>
-            <p className="plan-description">One payment for a 24-hour premium CV redo window. No subscription.</p>
-            <ul>
-              <li>Premium black-and-gold CV PDF</li>
-              <li>Matching editable cover letter</li>
-              <li>VÉLLON PASS design seal</li>
-              <li>PDF exports without an account</li>
-            </ul>
-            <button className="button button-gold plan-button"
-              onClick={() => setActivePage('pass')}>Explore PASS</button>
-            <p className="plan-footnote">Yoco checkout is not connected yet. Payment verification will be required before PASS access is granted.</p>
-          </article>
-        </div>
-      </section>
-
+      {activePage !== 'pass' && (
       <section className="workspace">
         <div className="editor-panel">
           <div className="panel-heading">
@@ -419,6 +371,8 @@ export default function App() {
           <button className="button button-outline preview-download" onClick={exportPDF}><Download size={16}/> Export your CV as PDF</button>
         </aside>
       </section>
+
+      )}
 
       <footer className="footer">
         <a className="brand footer-brand" href="#"><span className="brand-mark">V.</span><span>VÉLLON <small>CAREER STUDIO</small></span></a>

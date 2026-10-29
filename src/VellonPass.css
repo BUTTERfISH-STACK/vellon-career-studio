@@ -295,3 +295,160 @@
     height: 36px;
   }
 }
+
+
+/* PASS TEMPLATE SELECTOR UPGRADE */
+.pass-dev-preview { min-width: 0; }
+.pass-dev-preview-banner {
+  margin: 0 0 18px;
+  padding: 12px 15px;
+  border: 1px solid #806633;
+  border-radius: 4px;
+  color: #f0d79f;
+  background: #17130b;
+  font-size: 11px;
+  line-height: 1.6;
+  letter-spacing: .04em;
+}
+.vp2-choice-heading {
+  margin: 22px 0 10px;
+  color: #f2eee5;
+  font-size: 13px;
+  font-weight: 750;
+}
+.vp2-template-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 12px 0 20px;
+}
+.vp2-template-choice,
+.vp2-letter-style-choice {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 7px;
+  min-width: 0;
+  padding: 12px;
+  color: #e8e3d9;
+  text-align: left;
+  background: #11110f;
+  border: 1px solid #38342b;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.vp2-template-choice.selected,
+.vp2-letter-style-choice.selected {
+  border-color: #d8b56b;
+  box-shadow: inset 0 0 0 1px #d8b56b30;
+  background: #19160f;
+}
+.vp2-template-choice strong,
+.vp2-letter-style-choice strong { font-size: 11px; }
+.vp2-template-choice small,
+.vp2-letter-style-choice small {
+  color: #a9a396;
+  font-size: 10px;
+  line-height: 1.5;
+}
+.vp2-template-choice > svg {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: #d8b56b;
+}
+.vp2-template-mini {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 43px;
+  height: 53px;
+  padding: 7px 5px;
+  border: 1px solid #5c5139;
+  background: #f5f0e4;
+}
+.vp2-template-mini i {
+  display: block;
+  width: 100%;
+  height: 3px;
+  background: #a6a092;
+}
+.vp2-template-mini i:first-child {
+  width: 70%;
+  height: 6px;
+  background: #302d27;
+}
+.vp2-template-mini-executive { align-items: center; }
+.vp2-template-mini-executive i { width: 75%; }
+.vp2-template-mini-modern-professional { border-top: 4px solid #9c7839; }
+.vp2-template-mini-ats-classic { border-color: #d4d0c8; }
+.vp2-template-mini-ats-classic i:first-child { background: #242424; }
+.vp2-template-mini-vellon-signature { background: #111; border-color: #d8b56b; }
+.vp2-template-mini-vellon-signature i { background: #76694d; }
+.vp2-template-mini-vellon-signature i:first-child { background: #d8b56b; }
+.vp2-template-mini-creative { border-left: 5px solid #b08b47; }
+.vp2-template-mini-compact { gap: 2px; }
+.vp2-template-mini-compact i { height: 2px; }
+.vp2-letter-style-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+  margin: 10px 0 18px;
+}
+.vp2-letter-style-choice { min-height: 72px; }
+.vp2-paper.vp2-template-ats-classic {
+  font-family: Arial, Helvetica, sans-serif;
+  border-radius: 0;
+  box-shadow: none;
+}
+.vp2-paper.vp2-template-ats-classic .vp2-paper-brand,
+.vp2-paper.vp2-template-ats-classic footer { color: #555; }
+.vp2-paper.vp2-template-ats-classic .vp2-paper-brand span { color: #777; }
+.vp2-paper.vp2-template-ats-classic h2 { color: #222; }
+.vp2-paper.vp2-template-ats-classic section h3 {
+  color: #222;
+  border-bottom: 1px solid #888;
+}
+.vp2-paper.vp2-template-modern-professional .vp2-paper-brand {
+  border-bottom: 2px solid var(--vp2-accent, #b08b47);
+  padding-bottom: 8px;
+}
+.vp2-paper.vp2-template-modern-professional h2 { letter-spacing: -.035em; }
+.vp2-paper.vp2-template-executive { text-align: center; }
+.vp2-paper.vp2-template-executive section { text-align: left; }
+.vp2-paper.vp2-template-executive .vp2-paper-job { text-align: left; }
+.vp2-paper.vp2-template-vellon-signature .vp2-paper-brand {
+  letter-spacing: .14em;
+}
+.vp2-paper.vp2-template-creative {
+  position: relative;
+  padding-left: 25px;
+}
+.vp2-paper.vp2-template-creative .vp2-template-accent {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 7px;
+  background: #b08b47;
+}
+.vp2-paper.vp2-template-creative .vp2-paper-brand { margin-top: 3px; }
+.vp2-paper.vp2-template-compact { font-size: .9em; }
+.vp2-paper.vp2-template-compact section { margin-top: 12px; }
+.vp2-paper.vp2-template-compact .vp2-paper-job { margin-bottom: 8px; }
+.vp2-letter-paper.vp2-letter-style-formal .vp2-paper-brand {
+  padding-bottom: 8px;
+  border-bottom: 1px solid currentColor;
+}
+.vp2-letter-paper.vp2-letter-style-modern .vp2-paper-brand {
+  letter-spacing: .12em;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #b08b47;
+}
+.vp2-letter-paper.vp2-letter-style-minimal .vp2-paper-brand {
+  letter-spacing: .05em;
+  opacity: .75;
+}
+@media (max-width: 540px) {
+  .vp2-template-grid,
+  .vp2-letter-style-grid { grid-template-columns: 1fr; }
+}

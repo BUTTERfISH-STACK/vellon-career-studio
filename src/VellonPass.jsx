@@ -25,6 +25,22 @@ const themes = {
   }
 }
 
+const cvTemplates = [
+  { id: 'executive', label: 'Executive', description: 'Centered name and formal hierarchy' },
+  { id: 'modern-professional', label: 'Modern Professional', description: 'Clean left-aligned contemporary layout' },
+  { id: 'ats-classic', label: 'ATS Classic', description: 'Simple, restrained, recruiter-friendly layout' },
+  { id: 'vellon-signature', label: 'VÉLLON Signature', description: 'Black-and-gold premium identity' },
+  { id: 'creative', label: 'Creative', description: 'Distinctive accent panel and strong hierarchy' },
+  { id: 'compact', label: 'Compact', description: 'Tighter spacing for concise applications' }
+]
+
+const letterStyles = [
+  { id: 'signature', label: 'Signature', description: 'Premium branded letterhead' },
+  { id: 'formal', label: 'Formal', description: 'Traditional business correspondence' },
+  { id: 'modern', label: 'Modern', description: 'Clean, left-aligned presentation' },
+  { id: 'minimal', label: 'Minimal', description: 'Quiet styling with minimal decoration' }
+]
+
 const newId = () => `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
 
 function seedCV(form = {}) {
@@ -100,11 +116,16 @@ function Field({ label, value, onChange, placeholder = '', multiline = false, ro
   )
 }
 
-function Preview({ cv, theme }) {
+function Preview({ cv, theme, template = 'vellon-signature' }) {
+  const visibleJobs = cv.experience.filter(job =>
+    [job.role, job.company, job.dates, job.details].some(value => String(value || '').trim())
+  )
+
   return (
     <aside className={`vp2-preview vp2-paper-${theme}`}>
       <div className="vp2-preview-label"><EyeIcon /> LIVE DOCUMENT PREVIEW</div>
-      <article className="vp2-paper">
+      <article className={`vp2-paper vp2-template-${template}`}>
+        {template === 'creative' && <div className="vp2-template-accent" />}
         <div className="vp2-paper-brand">VÉLLON <span>/ PASS</span></div>
         <h2>{cv.name || 'Your Full Name'}</h2>
         <p className="vp2-paper-title">{cv.title || 'Professional Title'}</p>
@@ -113,10 +134,10 @@ function Preview({ cv, theme }) {
         </p>
         {cv.summary && <section><h3>PROFILE</h3><p>{cv.summary}</p></section>}
         {cv.skills && <section><h3>CORE SKILLS</h3><p>{cv.skills}</p></section>}
-        {cv.experience.some(job => [job.role, job.company, job.dates, job.details].some(Boolean)) &&
+        {visibleJobs.length > 0 && (
           <section>
             <h3>EXPERIENCE</h3>
-            {cv.experience.filter(job => [job.role, job.company, job.dates, job.details].some(Boolean)).map(job => (
+            {visibleJobs.map(job => (
               <div className="vp2-paper-job" key={job.id}>
                 <strong>{job.role || 'Position'}{job.company ? ` — ${job.company}` : ''}</strong>
                 {job.dates && <small>{job.dates}</small>}
@@ -124,7 +145,7 @@ function Preview({ cv, theme }) {
               </div>
             ))}
           </section>
-        }
+        )}
         {cv.education && <section><h3>EDUCATION</h3><p>{cv.education}</p></section>}
         <footer>VÉLLON PASS <span>PROFESSIONAL PROFILE</span></footer>
       </article>
@@ -132,22 +153,19 @@ function Preview({ cv, theme }) {
     </aside>
   )
 }
+function EyeIcon() { return <span aria-hidden="true">◉</span> }
 
-function EyeIcon() {
-  return <span aria-hidden="true">◉</span>
-}
-
-function exportPDF(kind, cv, letter, settings) {
+async function exportPDF(kind, cv, letter, settings, onPremiumExport) {
   if (!cv.name.trim()) {
     window.alert('Enter your full name in the CV editor before exporting.')
     return
   }
 
   const doc = new jsPDF({ format: 'a4', unit: 'mm' })
-  const palette = themes[settings.theme] || themes.obsidian
+  const palette = themes[kind === 'letter' ? (settings.letterTheme || settings.theme) : settings.theme] || themes.obsidian
   const pageW = doc.internal.pageSize.getWidth()
   const pageH = doc.internal.pageSize.getHeight()
-  const margin = 19
+  const margin = settings.template === 'compact' && kind === 'cv' ? 14 : 19
   const width = pageW - margin * 2
   const bottom = pageH - 23
   let y = 32
@@ -157,6 +175,14 @@ function exportPDF(kind, cv, letter, settings) {
     doc.rect(0, 0, pageW, pageH, 'F')
   }
   background()
+  const selectedTemplate = settings.template || 'vellon-signature'
+  if (kind === 'cv' && selectedTemplate === 'creative') {
+    doc.setFillColor(...palette.accent)
+    doc.rect(0, 0, 7, pageH, 'F')
+  } else if (kind === 'cv' && selectedTemplate === 'executive') {
+    doc.setFillColor(...palette.accent)
+    doc.rect(0, 0, pageW, 5, 'F')
+  }
 
   const nextPage = () => {
     doc.addPage()
@@ -216,12 +242,23 @@ function exportPDF(kind, cv, letter, settings) {
   }
 
   if (kind === 'cv') {
-    centeredWrite(cv.name, 23, 12, palette.accent, 'bold', 1)
-    centeredWrite(cv.title || 'Professional Profile', 11, 8, palette.text, 'normal', 2)
-    centeredWrite(
-      [cv.email, cv.phone, cv.location].filter(Boolean).join('  |  '),
-      8, 7, palette.muted, 'normal', 5
-    )
+    const template = settings.template || 'vellon-signature'
+    const contact = [cv.email, cv.phone, cv.location].filter(Boolean).join('  |  ')
+
+    if (template === 'ats-classic' || template === 'modern-professional' || template === 'compact') {
+      write(cv.name, template === 'compact' ? 19 : 22, palette.text, 'bold', 1)
+      write(cv.title || 'Professional Profile', 10, palette.accent, 'bold', 2)
+      write(contact, 8, palette.muted, 'normal', 5)
+    } else if (template === 'creative') {
+      y = 32
+      write(cv.name, 22, palette.accent, 'bold', 1)
+      write(cv.title || 'Professional Profile', 11, palette.text, 'bold', 2)
+      write(contact, 8, palette.muted, 'normal', 5)
+    } else {
+      centeredWrite(cv.name, template === 'executive' ? 25 : 23, 12, palette.accent, 'bold', 1)
+      centeredWrite(cv.title || 'Professional Profile', 11, 8, palette.text, 'normal', 2)
+      centeredWrite(contact, 8, 7, palette.muted, 'normal', 5)
+    }
 
     if (cv.summary.trim()) {
       heading('Professional Profile')
@@ -249,8 +286,21 @@ function exportPDF(kind, cv, letter, settings) {
       write(cv.education, settings.fontSize, palette.text, 'normal', 2)
     }
   } else {
-    write(cv.name, 21, palette.accent, 'bold', 1)
-    write([cv.title, cv.email, cv.phone, cv.location].filter(Boolean).join(' · '), 9, palette.text, 'normal', 7)
+    const style = settings.letterStyle || 'signature'
+    const contact = [cv.title, cv.email, cv.phone, cv.location].filter(Boolean).join(' · ')
+    if (style === 'signature') {
+      centeredWrite(cv.name, 22, 12, palette.accent, 'bold', 1)
+      centeredWrite(contact, 8, 7, palette.muted, 'normal', 7)
+    } else if (style === 'formal') {
+      write(cv.name, 18, palette.text, 'bold', 1)
+      write(contact, 8, palette.muted, 'normal', 7)
+    } else if (style === 'modern') {
+      write(cv.name, 21, palette.accent, 'bold', 1)
+      write(contact, 9, palette.text, 'normal', 7)
+    } else {
+      write(cv.name, 17, palette.text, 'normal', 1)
+      write(contact, 8, palette.muted, 'normal', 6)
+    }
     write(letter.date || new Date().toLocaleDateString(), 9, palette.muted, 'normal', 6)
     if (letter.recipient) write(letter.recipient, 10, palette.text, 'bold', 1)
     if (letter.company) write(letter.company, 10, palette.text, 'normal', 1)
@@ -278,10 +328,27 @@ function exportPDF(kind, cv, letter, settings) {
   }
 
   const safeName = cv.name.trim().replace(/[^a-z0-9_-]+/gi, '-').slice(0, 55) || 'Candidate'
-  doc.save(`${safeName}-Vellon-PASS-${kind === 'cv' ? 'CV' : 'Cover-Letter'}.pdf`)
+  const filename = `${safeName}-Vellon-PASS-${kind === 'cv' ? 'CV' : 'Cover-Letter'}.pdf`
+  if (kind === 'cv' && typeof onPremiumExport === 'function') {
+    // Generate the PDF blob before reserving a reward, so generation errors
+    // do not consume the user's credit.
+    const pdfBlob = doc.output('blob')
+    await onPremiumExport(() => {
+      const url = URL.createObjectURL(pdfBlob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = filename
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+      window.setTimeout(() => URL.revokeObjectURL(url), 1500)
+    })
+  } else {
+    doc.save(filename)
+  }
 }
 
-export default function VellonPass({ form = {} }) {
+export default function VellonPass({ form = {}, onPremiumExport, rewardMode = false }) {
   const [initial] = useState(() => loadDraft(form))
   const [cv, setCV] = useState(initial.cv)
   const [letter, setLetter] = useState({
@@ -294,6 +361,9 @@ export default function VellonPass({ form = {} }) {
   })
   const [settings, setSettings] = useState({
     theme: 'obsidian',
+    template: 'vellon-signature',
+    letterTheme: initial.settings?.letterTheme || initial.settings?.theme || 'obsidian',
+    letterStyle: 'signature',
     fontSize: 9,
     spacing: 4,
     ...initial.settings
@@ -386,7 +456,7 @@ export default function VellonPass({ form = {} }) {
                   Open CV Studio <ArrowRight size={16}/>
                 </button>
                 <button type="button" className="vp2-secondary vp2-quick-export"
-                  onClick={() => exportPDF('cv', cv, letter, settings)}>
+                  onClick={() => exportPDF('cv', cv, letter, settings, onPremiumExport)}>
                   <Download size={16}/> Download CV PDF
                 </button>
               </div>
@@ -435,7 +505,7 @@ export default function VellonPass({ form = {} }) {
               <button type="button" className="vp2-primary" onClick={() => setView('export')}>Continue to export <ArrowRight size={15}/></button>
             </div>
           </div>
-          <Preview cv={cv} theme={settings.theme}/>
+          <Preview cv={cv} theme={settings.theme} template={settings.template || 'vellon-signature'}/>
         </div>
       )}
 
@@ -456,9 +526,9 @@ export default function VellonPass({ form = {} }) {
               <button type="button" className="vp2-primary" onClick={() => setView('export')}>Continue to export <ArrowRight size={15}/></button>
             </div>
           </div>
-          <aside className={`vp2-preview vp2-paper-${settings.theme}`}>
+          <aside className={`vp2-preview vp2-paper-${settings.letterTheme || settings.theme}`}>
             <div className="vp2-preview-label"><Mail size={14}/> LIVE LETTER PREVIEW</div>
-            <article className="vp2-paper vp2-letter-paper">
+            <article className={`vp2-paper vp2-letter-paper vp2-letter-style-${settings.letterStyle || 'signature'}`}>
               <div className="vp2-paper-brand">VÉLLON <span>/ PASS</span></div>
               <h2>{cv.name || 'Your Full Name'}</h2>
               <p className="vp2-paper-contact">{[cv.email, cv.phone, cv.location].filter(Boolean).join(' · ')}</p>
@@ -476,6 +546,27 @@ export default function VellonPass({ form = {} }) {
           <div className="vp2-panel">
             <span className="vp2-kicker">DOCUMENT DESIGN</span><h3>Choose your finish.</h3>
             <p className="vp2-help">Design settings apply to both exported PDFs. Preview the CV to see the selected palette.</p>
+            <h4 className="vp2-choice-heading">CV template</h4>
+            <p className="vp2-help">Choose a layout. Your selection changes the live CV preview and the exported PDF.</p>
+            <div className="vp2-template-grid">
+              {cvTemplates.map(template => (
+                <button
+                  type="button"
+                  key={template.id}
+                  className={`vp2-template-choice ${settings.template === template.id ? 'selected' : ''}`}
+                  aria-pressed={settings.template === template.id}
+                  onClick={() => updateSettings('template', template.id)}
+                >
+                  <span className={`vp2-template-mini vp2-template-mini-${template.id}`}>
+                    <i/><i/><i/><i/>
+                  </span>
+                  <strong>{template.label}</strong>
+                  <small>{template.description}</small>
+                  {settings.template === template.id && <Check size={16}/>}
+                </button>
+              ))}
+            </div>
+            <h4 className="vp2-choice-heading">CV color palette</h4>
             <div className="vp2-themes">
               <button type="button" className={settings.theme === 'obsidian' ? 'selected' : ''} onClick={() => updateSettings('theme', 'obsidian')}>
                 <span className="vp2-swatch vp2-swatch-dark"/><strong>Obsidian Luxury</strong><small>Matte black · Champagne gold</small>{settings.theme === 'obsidian' && <Check/>}
@@ -484,11 +575,33 @@ export default function VellonPass({ form = {} }) {
                 <span className="vp2-swatch vp2-swatch-ivory"/><strong>Ivory Editorial</strong><small>Warm paper · Antique gold</small>{settings.theme === 'ivory' && <Check/>}
               </button>
             </div>
+            <h4 className="vp2-choice-heading">Cover-letter design</h4>
+            <div className="vp2-letter-style-grid">
+              {letterStyles.map(style => (
+                <button
+                  type="button"
+                  key={style.id}
+                  className={`vp2-letter-style-choice ${settings.letterStyle === style.id ? 'selected' : ''}`}
+                  aria-pressed={(settings.letterStyle || 'signature') === style.id}
+                  onClick={() => updateSettings('letterStyle', style.id)}
+                >
+                  <strong>{style.label}</strong>
+                  <small>{style.description}</small>
+                </button>
+              ))}
+            </div>
+            <div className="vp2-setting">
+              <label htmlFor="vp2-letter-theme">Cover-letter color palette</label>
+              <select id="vp2-letter-theme" value={settings.letterTheme || settings.theme} onChange={event => updateSettings('letterTheme', event.target.value)}>
+                <option value="obsidian">Obsidian Luxury · Black and gold</option>
+                <option value="ivory">Ivory Editorial · Warm paper</option>
+              </select>
+            </div>
             <div className="vp2-setting"><label htmlFor="vp2-font-size">CV body text size</label><select id="vp2-font-size" value={settings.fontSize} onChange={event => updateSettings('fontSize', Number(event.target.value))}><option value={8}>Compact · 8 pt</option><option value={9}>Standard · 9 pt</option><option value={10}>Comfortable · 10 pt</option></select></div>
             <div className="vp2-setting"><label htmlFor="vp2-spacing">Section spacing</label><select id="vp2-spacing" value={settings.spacing} onChange={event => updateSettings('spacing', Number(event.target.value))}><option value={2}>Compact</option><option value={4}>Balanced</option><option value={7}>Relaxed</option></select></div>
             <button type="button" className="vp2-primary" onClick={() => setView('export')}>Go to Export Center <ArrowRight size={15}/></button>
           </div>
-          <Preview cv={cv} theme={settings.theme}/>
+          <Preview cv={cv} theme={settings.theme} template={settings.template || 'vellon-signature'}/>
         </div>
       )}
 
@@ -497,8 +610,8 @@ export default function VellonPass({ form = {} }) {
           <span className="vp2-kicker">FINAL DOCUMENTS</span><h3>Ready when you are.</h3>
           <p className="vp2-help">Generate each document as a separate A4 PDF. Check your details before downloading.</p>
           <div className="vp2-export-grid">
-            <div className="vp2-export-card"><span className="vp2-export-icon"><FileText size={24}/></span><span className="vp2-kicker">DOCUMENT 01</span><h4>Curriculum Vitae</h4><p>{cv.name || 'Your name'}{cv.title ? ` · ${cv.title}` : ''}</p><button type="button" className="vp2-primary" onClick={() => exportPDF('cv', cv, letter, settings)}><Download size={16}/> Download CV PDF</button></div>
-            <div className="vp2-export-card"><span className="vp2-export-icon"><Mail size={24}/></span><span className="vp2-kicker">DOCUMENT 02</span><h4>Cover Letter</h4><p>{letter.company || 'Add a company in Cover Letter'}{letter.role ? ` · ${letter.role}` : ''}</p><button type="button" className="vp2-primary" onClick={() => exportPDF('letter', cv, letter, settings)}><Download size={16}/> Download Letter PDF</button></div>
+            <div className="vp2-export-card"><span className="vp2-export-icon"><FileText size={24}/></span><span className="vp2-kicker">DOCUMENT 01</span><h4>Curriculum Vitae</h4><p>{cv.name || 'Your name'}{cv.title ? ` · ${cv.title}` : ''}</p><button type="button" className="vp2-primary" onClick={() => exportPDF('cv', cv, letter, settings, onPremiumExport)}><Download size={16}/> Download CV PDF</button></div>
+            <div className="vp2-export-card"><span className="vp2-export-icon"><Mail size={24}/></span><span className="vp2-kicker">DOCUMENT 02</span><h4>Cover Letter</h4><p>{letter.company || 'Add a company in Cover Letter'}{letter.role ? ` · ${letter.role}` : ''}</p><button type="button" className="vp2-primary" disabled={rewardMode} onClick={() => exportPDF('letter', cv, letter, settings, onPremiumExport)}><Download size={16}/> Download Letter PDF</button></div>
           </div>
           <div className="vp2-privacy"><ShieldCheck size={19}/><div><strong>Before you submit</strong><p>Review spelling, dates, contact details, and job-specific information. The PDF export uses selectable text and standard fonts.</p></div></div>
           <button type="button" className="vp2-secondary" onClick={() => setView('cv')}><UserRound size={15}/> Return to CV Studio</button>
