@@ -380,11 +380,13 @@ export default function App() {
             </a>
           </div>
 
-          <div className="advertiser-banner-placeholder" aria-hidden="true">
-            <span className="advertiser-placeholder-mark">V.</span>
-            <span>YOUR LOGO</span>
-            <span className="advertiser-placeholder-divider" />
-            <span>YOUR MESSAGE</span>
+          <div className="advertiser-banner-preview">
+            <img
+              src="/ad-preview.jpg"
+              alt="Example advertisement preview for the VÉLLON Career Studio advertising placement"
+              loading="lazy"
+              decoding="async"
+            />
           </div>
 
           <div className="advertiser-banner-footnote">
