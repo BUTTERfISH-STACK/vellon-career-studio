@@ -1126,3 +1126,273 @@ main.app[data-page="dashboard"] .pass-promo {
   .advertiser-banner-preview { width: 100%; }
   .advertiser-banner-footnote { grid-column: auto; }
 }
+
+/* =====================================================
+   VELLON ADVERTISER HERO MOTION
+   Premium animated advertising placement
+   ===================================================== */
+
+.advertiser-banner {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  grid-template-columns: minmax(0, 1.15fr) minmax(240px, .85fr);
+  gap: clamp(22px, 4vw, 48px);
+  align-items: center;
+  min-height: 310px;
+  margin: 0 0 36px;
+  padding: clamp(25px, 4vw, 48px);
+  border: 1px solid rgba(216,181,107,.32);
+  border-radius: 20px;
+  background:
+    radial-gradient(ellipse at 15% 15%, rgba(216,181,107,.17), transparent 48%),
+    radial-gradient(ellipse at 90% 85%, rgba(216,181,107,.08), transparent 42%),
+    linear-gradient(125deg, #15130f 0%, #090909 65%, #11100d 100%);
+  box-shadow:
+    0 18px 65px rgba(0,0,0,.34),
+    0 0 45px rgba(216,181,107,.055);
+  animation: vellon-ad-enter .85s ease both;
+}
+
+/* Continuously travelling illuminated gold perimeter */
+.advertiser-banner::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  padding: 1.5px;
+  border-radius: inherit;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    transparent 245deg,
+    rgba(216,181,107,.12) 275deg,
+    #d8b56b 310deg,
+    #fff0c5 320deg,
+    #d8b56b 330deg,
+    transparent 355deg
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box,
+                linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  animation: vellon-ad-border-spin 5s linear infinite;
+}
+
+/* Moving light sweep */
+.advertiser-banner::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: -30%;
+  bottom: -30%;
+  left: -45%;
+  width: 34%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(216,181,107,.045),
+    rgba(255,240,197,.12),
+    rgba(216,181,107,.045),
+    transparent
+  );
+  transform: skewX(-18deg);
+  pointer-events: none;
+  animation: vellon-ad-light-sweep 8s ease-in-out infinite;
+}
+
+.advertiser-banner > * {
+  position: relative;
+  z-index: 1;
+}
+
+.advertiser-banner-copy {
+  min-width: 0;
+}
+
+.advertiser-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 22px;
+  color: #d8b56b;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .19em;
+  line-height: 1.7;
+}
+
+.advertiser-eyebrow::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  flex: 0 0 7px;
+  border-radius: 50%;
+  background: #d8b56b;
+  box-shadow: 0 0 12px rgba(216,181,107,.9);
+  animation: vellon-ad-pulse 2s ease-in-out infinite;
+}
+
+.advertiser-banner h2 {
+  margin: 0 0 15px;
+  color: #f7f2e8;
+  font-family: Manrope, sans-serif;
+  font-size: clamp(32px, 5.2vw, 58px);
+  font-weight: 850;
+  letter-spacing: -.065em;
+  line-height: 1.02;
+  text-wrap: balance;
+  text-shadow: 0 0 35px rgba(216,181,107,.12);
+}
+
+.advertiser-banner-prompt {
+  margin: 0 0 10px;
+  color: #d8b56b;
+  font-size: clamp(15px, 1.8vw, 19px);
+  font-weight: 750;
+  letter-spacing: .015em;
+}
+
+.advertiser-banner-description {
+  max-width: 470px;
+  margin: 0 0 25px;
+  color: #b8b1a5;
+  font-size: 13px;
+  line-height: 1.85;
+}
+
+.advertiser-banner-link {
+  min-height: 49px;
+  padding: 0 22px;
+  gap: 17px;
+  border: 1px solid #d8b56b;
+  border-radius: 6px;
+  background: linear-gradient(110deg, #e5c47e, #c49b4d);
+  color: #100e0a;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .09em;
+  box-shadow: 0 5px 25px rgba(216,181,107,.16);
+  transition: transform .25s ease, box-shadow .25s ease,
+              background .25s ease, color .25s ease;
+}
+
+.advertiser-banner-link:hover {
+  transform: translateY(-3px);
+  background: #f0d69c;
+  color: #100e0a;
+  box-shadow: 0 9px 32px rgba(216,181,107,.30);
+}
+
+.advertiser-banner-preview {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  border: 1px solid rgba(216,181,107,.45);
+  border-radius: 13px;
+  background: #080808;
+  box-shadow:
+    0 0 35px rgba(216,181,107,.10),
+    0 18px 35px rgba(0,0,0,.35);
+  transition: border-color .3s ease, transform .3s ease;
+}
+
+.advertiser-banner-preview:hover {
+  transform: translateY(-4px);
+  border-color: rgba(216,181,107,.8);
+}
+
+.advertiser-banner-preview img {
+  border-radius: inherit;
+}
+
+.advertiser-banner-footnote {
+  color: #918778;
+  border-top-color: rgba(216,181,107,.17);
+  font-size: 10px;
+  letter-spacing: .08em;
+}
+
+/* Motion */
+@keyframes vellon-ad-border-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes vellon-ad-light-sweep {
+  0%, 15% { left: -45%; opacity: 0; }
+  25% { opacity: 1; }
+  55% { left: 115%; opacity: .75; }
+  65%, 100% { left: 115%; opacity: 0; }
+}
+
+@keyframes vellon-ad-pulse {
+  0%, 100% {
+    opacity: .65;
+    box-shadow: 0 0 6px rgba(216,181,107,.45);
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 17px rgba(216,181,107,1);
+  }
+}
+
+@keyframes vellon-ad-enter {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mobile layout */
+@media (max-width: 760px) {
+  .advertiser-banner {
+    grid-template-columns: 1fr;
+    gap: 23px;
+    min-height: 0;
+    margin-bottom: 29px;
+    padding: 25px 20px;
+    border-radius: 15px;
+  }
+
+  .advertiser-eyebrow {
+    margin-bottom: 17px;
+    font-size: 9px;
+  }
+
+  .advertiser-banner h2 {
+    font-size: clamp(34px, 10vw, 47px);
+    line-height: 1.03;
+  }
+
+  .advertiser-banner-description {
+    margin-bottom: 20px;
+  }
+
+  .advertiser-banner-link {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .advertiser-banner-preview {
+    width: 100%;
+  }
+}
+
+/* Accessibility: respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .advertiser-banner,
+  .advertiser-banner::before,
+  .advertiser-banner::after,
+  .advertiser-eyebrow::before {
+    animation: none !important;
+  }
+
+  .advertiser-banner-link,
+  .advertiser-banner-preview {
+    transition: none !important;
+  }
+}

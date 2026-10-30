@@ -280,6 +280,40 @@ export default function App() {
 
       {activePage === 'dashboard' && (
       <section className="hero home-hero">
+
+        <aside className="advertiser-banner" aria-label="Advertising opportunity">
+          <div className="advertiser-banner-copy">
+            <span className="advertiser-eyebrow">VÉLLON CAREER STUDIO · PARTNER OPPORTUNITY</span>
+            <h2>YOUR BRAND. OUR AUDIENCE.</h2>
+            <p className="advertiser-banner-prompt">Show your ad here.</p>
+            <p className="advertiser-banner-description">
+              Put your business in front of people building their next career move.
+            </p>
+            <a
+              className="advertiser-banner-link"
+              href="https://wa.me/27844596054?text=Hi%20V%C3%89LLON%20Career%20Studio%2C%20I%27m%20interested%20in%20advertising%20on%20your%20website."
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Enquire about advertising with VÉLLON Career Studio on WhatsApp"
+            >
+              ADVERTISE WITH VÉLLON <span aria-hidden="true">↗</span>
+            </a>
+          </div>
+
+          <div className="advertiser-banner-preview">
+            <img
+              src="/ad-preview.jpg"
+              alt="Example advertisement preview for the VÉLLON Career Studio advertising placement"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+
+          <div className="advertiser-banner-footnote">
+            A space for selected brands and partners
+          </div>
+        </aside>
+
         <div className="eyebrow">
           <Sparkles size={14}/> A BETTER CV. A FRESH START.
         </div>
@@ -361,38 +395,7 @@ export default function App() {
           </button>
         </div>
 
-        <aside className="advertiser-banner" aria-label="Advertising opportunity">
-          <div className="advertiser-banner-copy">
-            <span className="advertiser-eyebrow">VÉLLON CAREER STUDIO · PARTNER OPPORTUNITY</span>
-            <h2>YOUR BRAND. OUR AUDIENCE.</h2>
-            <p className="advertiser-banner-prompt">Show your ad here.</p>
-            <p className="advertiser-banner-description">
-              Put your business in front of people building their next career move.
-            </p>
-            <a
-              className="advertiser-banner-link"
-              href="https://wa.me/27844596054?text=Hi%20V%C3%89LLON%20Career%20Studio%2C%20I%27m%20interested%20in%20advertising%20on%20your%20website."
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Enquire about advertising with VÉLLON Career Studio on WhatsApp"
-            >
-              ADVERTISE WITH VÉLLON <span aria-hidden="true">↗</span>
-            </a>
-          </div>
 
-          <div className="advertiser-banner-preview">
-            <img
-              src="/ad-preview.jpg"
-              alt="Example advertisement preview for the VÉLLON Career Studio advertising placement"
-              loading="lazy"
-              decoding="async"
-            />
-          </div>
-
-          <div className="advertiser-banner-footnote">
-            A space for selected brands and partners
-          </div>
-        </aside>
 
 </section>
       )}
