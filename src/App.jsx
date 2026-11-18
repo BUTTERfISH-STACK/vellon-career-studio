@@ -7,7 +7,7 @@ import {
   BriefcaseBusiness, GraduationCap, UserRound, Plus, Trash2,
   Eye
 } from 'lucide-react'
-import { jsPDF } from 'jspdf'
+import { generateCvPdf } from './cvLayout.js'
 import './index.css'
 
 const emptyExperience = () => ({
@@ -16,7 +16,7 @@ const emptyExperience = () => ({
 
 const initialForm = {
   name: '', title: '', email: '', phone: '', location: '',
-  summary: '', skills: '', education: '', experience: [emptyExperience()]
+  summary: '', skills: '', competencies: '', projects: '', certifications: '', education: '', experience: [emptyExperience()]
 }
 
 export default function App() {
@@ -32,51 +32,48 @@ export default function App() {
 
   const applyImportedCv = (parsed) => {
     const keys = [
-      'name', 'title', 'email', 'phone',
-      'location', 'summary', 'skills', 'education'
+      'name', 'title', 'email', 'phone', 'location',
+      'summary', 'skills', 'competencies', 'projects',
+      'certifications', 'education'
     ]
 
     setForm(old => {
       const next = { ...old }
 
       for (const key of keys) {
-        if (
-          parsed[key] &&
-          !String(old[key] || '').trim()
-        ) {
+        if (parsed[key] && !String(old[key] || '').trim()) {
           next[key] = parsed[key]
         }
       }
 
-      if (
-        parsed.experienceText &&
-        Array.isArray(old.experience) &&
-        old.experience.length > 0 &&
-        !old.experience.some(job =>
-          job.role || job.company || job.details
+      if (Array.isArray(parsed.experience) && parsed.experience.length) {
+        const hasExistingJobs = old.experience.some(job =>
+          job.role || job.company || job.dates || job.details
         )
-      ) {
-        next.experience = [
-          {
-            ...old.experience[0],
-            details: parsed.experienceText
-          },
-          ...old.experience.slice(1)
-        ]
+
+        if (!hasExistingJobs) {
+          next.experience = parsed.experience.map(job => ({
+            id: crypto.randomUUID(),
+            role: job.role || '',
+            company: job.company || '',
+            dates: job.dates || '',
+            details: job.details || ''
+          }))
+        }
+      } else if (parsed.experienceText && !old.experience.some(job =>
+        job.role || job.company || job.dates || job.details
+      )) {
+        next.experience = [{
+          ...old.experience[0],
+          details: parsed.experienceText
+        }]
       }
 
       return next
     })
 
-    if (typeof setNotice === 'function') {
-      setNotice(
-        'Imported details applied to empty fields. Review the CV and correct anything that needs editing.'
-      )
-    }
-
-    if (typeof setActiveTab === 'function') {
-      setActiveTab('personal')
-    }
+    setNotice('Imported information was placed into matching fields where detected. Review all sections and any unclassified text before exporting.')
+    setActiveTab('personal')
   }
 
   const updateExperience = (id, key, value) => {
@@ -105,106 +102,9 @@ export default function App() {
     }
 
     try {
-      const doc = new jsPDF()
-      const margin = 18
-      const pageWidth = doc.internal.pageSize.getWidth()
-      const usable = pageWidth - margin * 2
-      let y = 22
-
-      const ensureSpace = (height = 10) => {
-        if (y + height > 278) {
-          doc.addPage()
-          y = 20
-        }
-      }
-
-      const section = (heading, body) => {
-        if (!String(body || '').trim()) return
-        ensureSpace(18)
-        y += 5
-        doc.setFont('helvetica', 'bold')
-        doc.setFontSize(11)
-        doc.text(heading.toUpperCase(), margin, y)
-        y += 3
-        doc.setDrawColor(194, 157, 91)
-        doc.line(margin, y, pageWidth - margin, y)
-        y += 6
-        doc.setFont('helvetica', 'normal')
-        doc.setFontSize(10)
-        const lines = doc.splitTextToSize(String(body), usable)
-        for (const line of lines) {
-          ensureSpace(6)
-          doc.text(line, margin, y)
-          y += 5
-        }
-      }
-
-      doc.setFillColor(10, 10, 10)
-      doc.rect(0, 0, pageWidth, 48, 'F')
-      doc.setTextColor(225, 190, 120)
-      doc.setFont('helvetica', 'bold')
-      doc.setFontSize(21)
-      doc.text(form.name, margin, 20)
-      doc.setTextColor(255, 255, 255)
-      doc.setFontSize(11)
-      doc.text(form.title || 'Professional Profile', margin, 29)
-      doc.setFont('helvetica', 'normal')
-      doc.setFontSize(9)
-      doc.text(
-        [form.email, form.phone, form.location].filter(Boolean).join('  |  ').slice(0, 110),
-        margin, 39
-      )
-      doc.setTextColor(25, 25, 25)
-      y = 57
-
-      section('Professional Summary', form.summary)
-      section('Skills', form.skills)
-
-      for (const job of form.experience) {
-        const body = [
-          [job.role, job.company].filter(Boolean).join(' — '),
-          job.dates,
-          job.details
-        ].filter(Boolean).join('\n')
-        section('Work Experience', body)
-      }
-
-      section('Education', form.education)
-      const filename = form.name.trim().replace(/[^a-z0-9_-]+/gi, '-').slice(0, 60)
-      // VELLON FREE EDITION STAMP
-      // Reserve a clean footer area so CV content does not collide with the mark.
-      const stampWidth = 39
-      const stampHeight = 11
-      const stampX = pageWidth - margin - stampWidth
-      const stampY = 280
-
-      // Fine rectangular frame: deliberately no circular badge.
-      doc.setDrawColor(184, 148, 79)
-      doc.setLineWidth(0.3)
-      doc.rect(stampX, stampY, stampWidth, stampHeight, 'S')
-
-      doc.setTextColor(126, 99, 52)
-      doc.setFont('helvetica', 'bold')
-      doc.setFontSize(8)
-      doc.text('VÉLLON', stampX + 3, stampY + 4.8)
-
-      doc.setFont('helvetica', 'normal')
-      doc.setFontSize(5)
-      doc.setTextColor(115, 107, 91)
-      doc.text('FREE EDITION', stampX + 3, stampY + 8.3)
-
-      doc.setDrawColor(184, 148, 79)
-      doc.setLineWidth(0.45)
-      doc.line(stampX + 27, stampY + 2.5, stampX + 27, stampY + 8.5)
-
-      doc.setFont('helvetica', 'bold')
-      doc.setFontSize(5.5)
-      doc.setTextColor(126, 99, 52)
-      doc.text('V.', stampX + 30, stampY + 6.8)
-
-      doc.save(`${filename || 'CV'}-Vellon.pdf`)
+      generateCvPdf(form)
       trackStandardExport()
-      setNotice('Your CV export was generated. Check your Downloads.')
+      setNotice('Your redesigned CV PDF was generated. Check your Downloads.')
     } catch (error) {
       console.error(error)
       setNotice('PDF export failed. Please try again.')
@@ -424,7 +324,7 @@ export default function App() {
             {input('Phone number', 'phone', '+27 ...')}
             {input('City / region', 'location', 'e.g. Durban, South Africa')}
             {input('Professional summary', 'summary', 'Introduce your experience, strengths and career goals...', true)}
-            {input('Skills', 'skills', 'Customer service, Excel, communication...')}
+            {input('Skills', 'skills', 'Customer service, Excel, communication...')}\n            {input('Professional competencies', 'competencies', 'Leadership, problem-solving, project delivery...', true)}
           </div>}
 
           {activeTab === 'experience' && <div className="fields">
@@ -441,7 +341,7 @@ export default function App() {
           </div>}
 
           {activeTab === 'education' && <div className="fields">
-            {input('Education and qualifications', 'education', 'Qualification, institution, years and relevant details...', true)}
+            {input('Education and qualifications', 'education', 'Qualification, institution, years and relevant details...', true)}\n            {input('Certifications and professional development', 'certifications', 'Certificate, provider and completion date...', true)}\n            {input('Projects and portfolio', 'projects', 'Project name, purpose, technologies and achievements...', true)}
           </div>}
 
           {notice && <div className="notice" role="status">{notice}<button onClick={() => setNotice('')} aria-label="Dismiss">×</button></div>}
@@ -453,25 +353,94 @@ export default function App() {
 
         <aside className="preview-panel">
           <div className="preview-heading"><span><Eye size={16}/> LIVE PREVIEW</span><span className="live-dot">LIVE</span></div>
-          <article className="paper">
-            <div className="paper-header">
-              <h2>{form.name || 'Your Name'}</h2>
-              <p>{form.title || 'Professional Headline'}</p>
-              <div className="paper-contact">{[form.email, form.phone, form.location].filter(Boolean).join(' · ') || 'Email · Phone · Location'}</div>
-            </div>
-            <div className="paper-content">
-              <PreviewSection title="Profile" value={form.summary || 'Your professional summary will appear here. Briefly describe your experience, strengths and career direction.'}/>
-              <PreviewSection title="Skills" value={form.skills || 'Your key skills will appear here.'}/>
-              <h3>Experience</h3>
-              {form.experience.some(j => j.role || j.company || j.details) ? form.experience.filter(j => j.role || j.company || j.details).map(j => <div className="preview-job" key={j.id}><strong>{j.role || 'Position'}{j.company ? ` — ${j.company}` : ''}</strong>{j.dates && <small>{j.dates}</small>}<p>{j.details}</p></div>) : <p className="placeholder">Your professional experience will appear here.</p>}
-              {form.education && <><h3>Education</h3><p>{form.education}</p></>}
-            </div>
-            <div className="free-edition-stamp-wrap" aria-label="Vellon free edition watermark">
-              <div className="free-edition-stamp">
-                <span className="free-edition-stamp-wordmark">VÉLLON</span>
-                <span className="free-edition-stamp-divider" />
-                <span className="free-edition-stamp-label">FREE EDITION</span>
-                <span className="free-edition-stamp-monogram">V.</span>
+          <article className="paper paper-editorial">
+            <aside className="paper-rail">
+              <div className="paper-rail-brand">
+                <span>V.</span>
+                <small>VÉLLON / CAREER STUDIO</small>
+              </div>
+
+              <div className="paper-identity">
+                <h2>{form.name || 'Your Name'}</h2>
+                <p>{form.title || 'Professional Profile'}</p>
+              </div>
+
+              <div className="paper-rail-section">
+                <h3>Contact</h3>
+                {[form.email, form.phone, form.location].filter(Boolean).length
+                  ? [form.email, form.phone, form.location].filter(Boolean).map((item, index) => (
+                    <p key={index}>{item}</p>
+                  ))
+                  : <p className="paper-empty">Email · Phone · Location</p>}
+              </div>
+
+              <div className="paper-rail-section">
+                <h3>Core Skills</h3>
+                {form.skills
+                  ? form.skills.split(/[,\n;•]+/).map(skill => skill.trim()).filter(Boolean).map((skill, index) => (
+                    <span className="paper-skill" key={`${skill}-${index}`}>{skill}</span>
+                  ))
+                  : <p className="paper-empty">Your key skills will appear here.</p>}
+              </div>
+
+              <div className="paper-rail-footer">VÉLLON <small>FREE EDITION</small></div>
+            </aside>
+
+            <div className="paper-main">
+              <div className="paper-kicker"><span /> PROFESSIONAL CURRICULUM VITAE</div>
+
+              <section className="paper-section">
+                <h3>Professional Summary</h3>
+                <p className={form.summary ? '' : 'placeholder'}>
+                  {form.summary || 'Introduce your experience, strengths and career direction.'}
+                </p>
+              </section>
+
+              <section className="paper-section">
+                <h3>Professional Experience</h3>
+                {form.experience.some(j => j.role || j.company || j.details || j.dates)
+                  ? form.experience.filter(j => j.role || j.company || j.details || j.dates).map(j => (
+                    <div className="paper-job" key={j.id}>
+                      <strong>{j.role || 'Position'}</strong>
+                      {j.company && <span className="paper-company">{j.company}</span>}
+                      {j.dates && <small>{j.dates}</small>}
+                      {j.details && <p>{j.details}</p>}
+                    </div>
+                  ))
+                  : <p className="placeholder">Your work history will appear here.</p>}
+              </section>
+
+              {form.education && (
+                <section className="paper-section">
+                  <h3>Education & Qualifications</h3>
+                  <p>{form.education}</p>
+                </section>
+              )}
+
+              {form.projects && (
+                <section className="paper-section">
+                  <h3>Projects & Portfolio</h3>
+                  <p>{form.projects}</p>
+                </section>
+              )}
+
+              {form.certifications && (
+                <section className="paper-section">
+                  <h3>Certifications & Professional Development</h3>
+                  <p>{form.certifications}</p>
+                </section>
+              )}
+
+              {form.competencies && (
+                <section className="paper-section">
+                  <h3>Professional Competencies</h3>
+                  <p>{form.competencies}</p>
+                </section>
+              )}
+
+              <div className="paper-page-footer">
+                <span>PREPARED WITH VÉLLON CAREER STUDIO</span>
+                <span>01</span>
               </div>
             </div>
           </article>

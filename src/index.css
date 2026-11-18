@@ -1396,3 +1396,308 @@ main.app[data-page="dashboard"] .pass-promo {
     transition: none !important;
   }
 }
+
+/* =========================================================
+   VÉLLON CV EDITORIAL DOCUMENT — LOCAL REDESIGN
+   Scoped to the standard CV preview only.
+   ========================================================= */
+
+.paper.paper-editorial {
+  display: grid;
+  grid-template-columns: 35% 65%;
+  width: 100%;
+  min-height: 590px;
+  aspect-ratio: 210 / 297;
+  overflow: hidden;
+  background: #faf9f6;
+  color: #292824;
+  border: 1px solid #d7d1c5;
+  border-radius: 2px;
+  box-shadow: 0 18px 42px rgba(0,0,0,.28);
+  font-family: 'DM Sans', sans-serif;
+}
+
+.paper-editorial .paper-rail {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 7% 8%;
+  color: #f4f0e7;
+  background:
+    linear-gradient(155deg, rgba(216,181,107,.08), transparent 36%),
+    #171715;
+  border-right: 2px solid #c49a57;
+  overflow-wrap: anywhere;
+}
+
+.paper-editorial .paper-rail-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding-bottom: 17px;
+  border-bottom: 1px solid rgba(216,181,107,.35);
+}
+
+.paper-editorial .paper-rail-brand > span {
+  width: 27px;
+  height: 27px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #d8b56b;
+  color: #e1c58b;
+  font: 800 13px Manrope, sans-serif;
+}
+
+.paper-editorial .paper-rail-brand small {
+  color: #c9b17e;
+  font-size: 5px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.paper-editorial .paper-identity {
+  padding: 21px 0 17px;
+}
+
+.paper-editorial .paper-identity h2 {
+  margin: 0 0 10px;
+  color: #fbf8ef;
+  font: 800 clamp(16px, 2.2vw, 24px)/1.12 Manrope, sans-serif;
+  letter-spacing: -.65px;
+  overflow-wrap: anywhere;
+}
+
+.paper-editorial .paper-identity p {
+  margin: 0;
+  color: #d8b56b;
+  font-size: 8px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.paper-editorial .paper-rail-section {
+  padding: 13px 0;
+  border-top: 1px solid rgba(216,181,107,.28);
+}
+
+.paper-editorial .paper-rail-section h3 {
+  margin: 0 0 10px;
+  color: #d8b56b;
+  font: 800 7px Manrope, sans-serif;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+
+.paper-editorial .paper-rail-section p {
+  margin: 0 0 7px;
+  color: #e2ded4;
+  font-size: 7px;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.paper-editorial .paper-rail-section .paper-empty {
+  color: #8f897d;
+  font-style: italic;
+}
+
+.paper-editorial .paper-skill {
+  display: block;
+  position: relative;
+  padding: 0 0 0 9px;
+  margin: 0 0 7px;
+  color: #e7e1d5;
+  font-size: 7px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.paper-editorial .paper-skill::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 0;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #d8b56b;
+}
+
+.paper-editorial .paper-rail-footer {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid rgba(216,181,107,.28);
+  color: #d8b56b;
+  font: 800 7px Manrope, sans-serif;
+  letter-spacing: 1px;
+}
+
+.paper-editorial .paper-rail-footer small {
+  display: block;
+  margin-top: 4px;
+  color: #918878;
+  font: 500 5px 'DM Sans', sans-serif;
+  letter-spacing: 1.2px;
+}
+
+.paper-editorial .paper-main {
+  position: relative;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 8% 8% 6%;
+  background: #faf9f6;
+  overflow-wrap: anywhere;
+}
+
+.paper-editorial .paper-kicker {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0 0 25px;
+  color: #777166;
+  font-size: 6px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.paper-editorial .paper-kicker span {
+  display: inline-block;
+  width: 15px;
+  height: 2px;
+  background: #c49a57;
+}
+
+.paper-editorial .paper-section {
+  margin: 0 0 22px;
+}
+
+.paper-editorial .paper-section h3 {
+  margin: 0 0 11px;
+  padding-bottom: 7px;
+  border-bottom: 1px solid #d9c9a9;
+  color: #26251f;
+  font: 800 9px Manrope, sans-serif;
+  letter-spacing: .8px;
+  text-transform: uppercase;
+}
+
+.paper-editorial .paper-section > p {
+  margin: 0;
+  color: #4d4a43;
+  font-size: 8px;
+  line-height: 1.75;
+  white-space: pre-wrap;
+}
+
+.paper-editorial .paper-section > p.placeholder {
+  color: #aaa398;
+  font-style: italic;
+}
+
+.paper-editorial .paper-job {
+  margin: 0 0 17px;
+  padding-left: 10px;
+  border-left: 1.5px solid #d1b47d;
+}
+
+.paper-editorial .paper-job strong {
+  display: block;
+  margin-bottom: 3px;
+  color: #292821;
+  font: 800 8.5px Manrope, sans-serif;
+  line-height: 1.45;
+}
+
+.paper-editorial .paper-job .paper-company {
+  display: block;
+  margin-bottom: 3px;
+  color: #76613d;
+  font-size: 7.5px;
+  font-weight: 700;
+}
+
+.paper-editorial .paper-job small {
+  display: block;
+  margin-bottom: 6px;
+  color: #8b8579;
+  font-size: 6.5px;
+}
+
+.paper-editorial .paper-job p {
+  margin: 0;
+  color: #4d4a43;
+  font-size: 7.5px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+.paper-editorial .paper-page-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid #ddd8ce;
+  color: #898274;
+  font-size: 5px;
+  font-weight: 700;
+  letter-spacing: .6px;
+}
+
+@media (max-width: 760px) {
+  .paper.paper-editorial {
+    min-height: 0;
+    aspect-ratio: 210 / 297;
+  }
+
+  .paper-editorial .paper-rail {
+    padding: 7% 7%;
+  }
+
+  .paper-editorial .paper-main {
+    padding: 8% 7% 6%;
+  }
+
+  .paper-editorial .paper-kicker {
+    margin-bottom: 17px;
+    font-size: 5px;
+  }
+
+  .paper-editorial .paper-section {
+    margin-bottom: 15px;
+  }
+
+  .paper-editorial .paper-section h3 {
+    font-size: 7px;
+  }
+
+  .paper-editorial .paper-section > p,
+  .paper-editorial .paper-job p {
+    font-size: 6.5px;
+  }
+
+  .paper-editorial .paper-job strong {
+    font-size: 7px;
+  }
+
+  .paper-editorial .paper-job {
+    margin-bottom: 12px;
+  }
+}
+
+@media (max-width: 390px) {
+  .paper-editorial .paper-identity h2 {
+    font-size: 15px;
+  }
+
+  .paper-editorial .paper-rail-section p,
+  .paper-editorial .paper-skill {
+    font-size: 6px;
+  }
+
+  .paper-editorial .paper-section > p,
+  .paper-editorial .paper-job p {
+    font-size: 6px;
+  }
+}

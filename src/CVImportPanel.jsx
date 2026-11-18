@@ -42,10 +42,14 @@ export default function CVImportPanel({ onApply }) {
         ['Email', parsed.email],
         ['Phone', parsed.phone],
         ['Location', parsed.location],
-        ['Summary', parsed.summary],
-        ['Skills', parsed.skills],
+        ['Professional summary', parsed.summary],
+        ['Technical skills', parsed.skills],
+        ['Professional competencies', parsed.competencies],
+        ['Projects and portfolio', parsed.projects],
+        ['Certifications', parsed.certifications],
         ['Education', parsed.education],
-        ['Experience section', parsed.experienceText]
+        ['Work positions detected', parsed.experience?.length ? `${parsed.experience.length} position(s)` : parsed.experienceText],
+        ['Needs review', parsed.unclassified]
       ].filter(([, value]) => value)
     : []
 
