@@ -1701,3 +1701,61 @@ main.app[data-page="dashboard"] .pass-promo {
     font-size: 6px;
   }
 }
+
+/* VÉLLON Spotlight — DÆP featured artist */
+.daep-spotlight .advertiser-banner-copy h2 span {
+  color: var(--gold);
+}
+
+.daep-spotlight-art {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 190px;
+  padding: 24px;
+  overflow: hidden;
+  text-decoration: none;
+  color: #f1eee5;
+  background:
+    radial-gradient(ellipse at 50% 35%, rgba(216,181,107,.2), transparent 58%),
+    linear-gradient(145deg, #211b10, #090909 72%);
+  border: 1px solid rgba(216,181,107,.38);
+  border-radius: 8px;
+}
+
+.daep-spotlight-art strong {
+  font: 900 clamp(48px, 7vw, 76px)/.95 Manrope, sans-serif;
+  letter-spacing: -5px;
+}
+
+.daep-spotlight-art strong span {
+  color: var(--gold);
+}
+
+.daep-art-overline,
+.daep-art-caption {
+  color: #c8b994;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-align: center;
+}
+
+.daep-art-play {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  color: #0b0b0a;
+  background: var(--gold);
+  border-radius: 50%;
+  font-size: 12px;
+}
+
+.daep-spotlight-art:hover {
+  border-color: var(--gold);
+  transform: translateY(-2px);
+}

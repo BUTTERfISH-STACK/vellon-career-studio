@@ -181,36 +181,40 @@ export default function App() {
       {activePage === 'dashboard' && (
       <section className="hero home-hero">
 
-        <aside className="advertiser-banner" aria-label="Advertising opportunity">
+        <aside className="advertiser-banner daep-spotlight" aria-label="DÆP featured artist promotion">
           <div className="advertiser-banner-copy">
-            <span className="advertiser-eyebrow">VÉLLON CAREER STUDIO · PARTNER OPPORTUNITY</span>
-            <h2>YOUR BRAND. OUR AUDIENCE.</h2>
-            <p className="advertiser-banner-prompt">Show your ad here.</p>
+            <span className="advertiser-eyebrow">VÉLLON SPOTLIGHT · FEATURED ARTIST</span>
+            <h2>MEET <span>DÆP.</span></h2>
+            <p className="advertiser-banner-prompt">SOUTH AFRICAN SOUND. YOUR NEXT LISTEN.</p>
             <p className="advertiser-banner-description">
-              Put your business in front of people building their next career move.
+              Discover DÆP. Explore the music, latest releases and sounds on YouTube.
             </p>
             <a
               className="advertiser-banner-link"
-              href="https://wa.me/27844596054?text=Hi%20V%C3%89LLON%20Career%20Studio%2C%20I%27m%20interested%20in%20advertising%20on%20your%20website."
+              href="https://youtube.com/@daep-za?si=6zo0ZvOg9Oqpq-7r"
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="Enquire about advertising with VÉLLON Career Studio on WhatsApp"
+              aria-label="Listen to DÆP on YouTube"
             >
-              ADVERTISE WITH VÉLLON <span aria-hidden="true">↗</span>
+              LISTEN ON YOUTUBE <span aria-hidden="true">↗</span>
             </a>
           </div>
 
-          <div className="advertiser-banner-preview">
-            <img
-              src="/ad-preview.jpg"
-              alt="Example advertisement preview for the VÉLLON Career Studio advertising placement"
-              loading="lazy"
-              decoding="async"
-            />
-          </div>
+          <a
+            className="advertiser-banner-preview daep-spotlight-art"
+            href="https://youtube.com/@daep-za?si=6zo0ZvOg9Oqpq-7r"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Visit the DÆP YouTube channel"
+          >
+            <span className="daep-art-overline">VÉLLON PRESENTS</span>
+            <strong>DÆP<span>.</span></strong>
+            <span className="daep-art-caption">INDEPENDENT MUSIC · OFFICIAL CHANNEL</span>
+            <span className="daep-art-play">▶</span>
+          </a>
 
           <div className="advertiser-banner-footnote">
-            A space for selected brands and partners
+            Featured artist · Sponsored by VÉLLON
           </div>
         </aside>
 
