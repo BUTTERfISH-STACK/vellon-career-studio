@@ -38,3 +38,6 @@ dist-ssr
 .env.*.local
 .neon
 .env*
+
+# Local review database and private credentials
+.vellon-data/
