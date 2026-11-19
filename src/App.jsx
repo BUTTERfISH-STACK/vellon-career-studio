@@ -1,14 +1,17 @@
 import CVImportPanel from "./CVImportPanel.jsx"
 import { initializeReferralTracking, trackStandardExport } from './referrals.js'
-import { useEffect, useMemo, useState } from 'react'
+import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
 import {
   FileText, Download, ShieldCheck, Sparkles,
   Home,
   BriefcaseBusiness, GraduationCap, UserRound, Plus, Trash2,
-  Eye
+  Eye, Rocket
 } from 'lucide-react'
 import { generateCvPdf } from './cvLayout.js'
 import './index.css'
+import './launch/launch.css'
+
+const LaunchPage = lazy(() => import('./launch/LaunchPage.jsx'))
 
 const emptyExperience = () => ({
   id: crypto.randomUUID(), role: '', company: '', dates: '', details: ''
@@ -143,6 +146,11 @@ export default function App() {
             onClick={() => setActivePage('cv')}>
             <FileText size={18}/><span>Free CV Builder</span>
           </button>
+          <button className={activePage === 'launch' ? 'active' : ''}
+            aria-current={activePage === 'launch' ? 'page' : undefined}
+            onClick={() => setActivePage('launch')}>
+            <Rocket size={18}/><span>VÉLLON Launch</span>
+          </button>
         </nav>
 
 
@@ -162,7 +170,7 @@ export default function App() {
           <span>VÉLLON <small>CAREER STUDIO</small></span>
         </a>
         <div className="top-actions">
-          <span className="free-label"><ShieldCheck size={15}/> FREE CV BUILDER</span>
+          <span className="free-label"><ShieldCheck size={15}/> {activePage === 'launch' ? 'VÉLLON LAUNCH' : 'FREE CV BUILDER'}</span>
           {activePage === 'cv' ? (
             <button className="button button-gold" onClick={exportPDF}>
               <Download size={16}/> Export PDF
@@ -457,62 +465,90 @@ export default function App() {
 
 
 
-      <ReputationSection />
+      {activePage === 'launch' && (
+        <Suspense fallback={<div className="launch-loading">Opening VÉLLON Launch…</div>}>
+          <LaunchPage />
+        </Suspense>
+      )}
 
-      <footer className="footer">
-        <a className="brand footer-brand" href="#"><span className="brand-mark">V.</span><span>VÉLLON <small>CAREER STUDIO</small></span></a>
-        <span>Built for your next opportunity.</span>
-        <span>Free CV creation · No account required</span>
-      </footer>
+      {activePage !== 'launch' && <ReputationSection />}
+
+      {activePage !== 'launch' && (
+        <footer className="footer">
+          <a className="brand footer-brand" href="#"><span className="brand-mark">V.</span><span>VÉLLON <small>CAREER STUDIO</small></span></a>
+          <span>Built for your next opportunity.</span>
+          <span>Free CV creation · No account required</span>
+        </footer>
+      )}
     </main>
   )
 }
 
-function PreviewSection({ title, value }) {
-  return <><h3>{title}</h3><p className={value.startsWith('Your ') ? 'placeholder' : ''}>{value}</p></>
-}
 
 
-const reputationSamples = [
-  { name: "Alex M.", rating: 5, text: "A straightforward experience. The CV layout looks professional and the editing process was easy to follow." },
-  { name: "Jordan K.", rating: 5, text: "I appreciated the clean design. The live preview made it much easier to check my information." },
-  { name: "Taylor R.", rating: 5, text: "Simple to use, professional presentation and a useful final PDF. A good starting point for improving your CV." },
-  { name: "Sam P.", rating: 5, text: "The overall design feels polished. I liked being able to make changes and immediately see the result." },
-  { name: "Morgan D.", rating: 4, text: "A clean and convenient CV builder. The experience was easy to understand and navigate." }
-]
 
 function ReputationSection() {
   const [rating, setRating] = useState(5)
   const [name, setName] = useState('')
   const [message, setMessage] = useState('')
   const [feedback, setFeedback] = useState('')
+
   const [reviews, setReviews] = useState(() => {
     try {
-      const published = JSON.parse(localStorage.getItem('vellon-review-published') || '[]')
-      const pending = JSON.parse(localStorage.getItem('vellon-review-pending') || '[]')
-      const saved = [
-        ...(Array.isArray(published) ? published : []),
-        ...(Array.isArray(pending) ? pending : [])
-      ]
-      const unique = [...new Map(saved.map(item => [item.id, item])).values()]
-      const migrated = unique.map(item => ({
-        ...item,
-        text: item.text || item.message || ''
-      }))
-      localStorage.setItem('vellon-review-published', JSON.stringify(migrated))
+      const stored = JSON.parse(
+        localStorage.getItem('vellon-review-published') || '[]'
+      )
+
+      // Remove known fabricated sample testimonials.
+      const sampleNames = new Set([
+        'Alex M.',
+        'Jordan K.',
+        'Taylor R.',
+        'Sam P.',
+        'Morgan D.'
+      ])
+
+      const valid = Array.isArray(stored)
+        ? stored.filter(item =>
+            item &&
+            typeof item.name === 'string' &&
+            item.name.trim() &&
+            typeof (item.text || item.message) === 'string' &&
+            (item.text || item.message).trim() &&
+            Number.isInteger(Number(item.rating)) &&
+            Number(item.rating) >= 1 &&
+            Number(item.rating) <= 5 &&
+            !sampleNames.has(item.name.trim())
+          ).map(item => ({
+            ...item,
+            rating: Number(item.rating),
+            text: (item.text || item.message).trim()
+          }))
+        : []
+
+      localStorage.setItem(
+        'vellon-review-published',
+        JSON.stringify(valid)
+      )
+
       localStorage.removeItem('vellon-review-pending')
-      return [...migrated, ...reputationSamples]
+
+      return valid
     } catch {
-      return reputationSamples
+      return []
     }
   })
 
   const averageRating = reviews.length
-    ? (reviews.reduce((total, review) => total + review.rating, 0) / reviews.length).toFixed(1)
+    ? (
+        reviews.reduce((total, review) => total + review.rating, 0) /
+        reviews.length
+      ).toFixed(1)
     : '0.0'
 
   const submitReview = (event) => {
     event.preventDefault()
+
     if (!name.trim() || !message.trim()) return
 
     const review = {
@@ -524,44 +560,76 @@ function ReputationSection() {
     }
 
     const updated = [review, ...reviews]
-    setReviews(updated)
 
     try {
-      const savedReviews = updated.filter(item => !reputationSamples.includes(item))
-      localStorage.setItem('vellon-review-published', JSON.stringify(savedReviews))
-      localStorage.removeItem('vellon-review-pending')
-    } catch {
-      setFeedback('Your review is visible, but browser storage is unavailable.')
-      return
-    }
+      localStorage.setItem(
+        'vellon-review-published',
+        JSON.stringify(updated)
+      )
 
-    setName('')
-    setMessage('')
-    setRating(5)
-    setFeedback('Thank you. Your review has been published.')
+      localStorage.removeItem('vellon-review-pending')
+
+      setReviews(updated)
+      setName('')
+      setMessage('')
+      setRating(5)
+      setFeedback('Thank you. Your review has been published.')
+    } catch {
+      setFeedback(
+        'Unable to save your review. Please check your browser storage.'
+      )
+    }
   }
 
   return (
-    <section className="vellon-reputation" aria-labelledby="vellon-review-title">
+    <section
+      className="vellon-reputation"
+      aria-labelledby="vellon-review-title"
+    >
       <div className="vr-heading">
         <span className="vr-eyebrow">THE VÉLLON STANDARD</span>
-        <h2 id="vellon-review-title">Your experience.<br/><span>Our reputation.</span></h2>
-        <p>Honest feedback helps us improve. Discover customer experiences and share your feedback.</p>
+        <h2 id="vellon-review-title">
+          Your experience.<br />
+          <span>Our reputation.</span>
+        </h2>
+        <p>
+          Honest feedback helps us improve. Discover customer
+          experiences and share your feedback.
+        </p>
       </div>
 
       <div className="vr-summary">
         <div className="vr-score-card">
           <span className="vr-label">CUSTOMER RATING</span>
-          <strong className="vr-score">{averageRating}<small> / 5</small></strong>
-          <div className="vr-stars" aria-label={`Average rating ${averageRating} out of 5`}>★★★★★</div>
-          <p>Based on {reviews.length} reviews</p>
-          <span className="vr-demo">ILLUSTRATIVE RATING</span>
+
+          <strong className="vr-score">
+            {averageRating}<small> / 5</small>
+          </strong>
+
+          <div
+            className="vr-stars"
+            aria-label={`${averageRating} out of 5`}
+          >
+            {Array.from({ length: 5 }, (_, i) =>
+              i < Math.round(Number(averageRating)) ? '★' : '☆'
+            ).join('')}
+          </div>
+
+          <p>
+            Based on {reviews.length} reviews
+          </p>
         </div>
+
         <div className="vr-standard">
           <span className="vr-label">OUR COMMITMENT</span>
           <h3>Every voice matters.</h3>
-          <p>We welcome honest feedback, constructive criticism and suggestions that help us deliver a better experience.</p>
-          <span className="vr-verified">✓ Reviews appear immediately after submission</span>
+          <p>
+            We welcome honest feedback, constructive criticism
+            and suggestions that help us deliver a better experience.
+          </p>
+          <span className="vr-verified">
+            ✓ Customer feedback updates the rating automatically
+          </span>
         </div>
       </div>
 
@@ -573,70 +641,106 @@ function ReputationSection() {
         <span className="vr-demo-label">CUSTOMER STORIES</span>
       </div>
 
-      <div className="vr-carousel-shell" aria-label="Customer testimonials">
-        <div className="vr-carousel-orbit" aria-hidden="true">
-          <span></span>
-          <span></span>
-        </div>
+      <div
+        className="vr-carousel-shell"
+        aria-label="Customer testimonials"
+      >
+        {reviews.length > 0 ? (
+          <>
+            <div className="vr-carousel-orbit" aria-hidden="true">
+              <span></span>
+              <span></span>
+            </div>
 
-        <div className="vr-carousel">
-          {reviews.map((review, index) => (
-            <article
-              className="vr-carousel-card"
-              key={review.id || review.name + index}
-              style={{ "--review-index": index }}
-            >
-              <div className="vr-carousel-top">
-                <span className="vr-card-stars">
-                  {'★'.repeat(review.rating)}{'☆'.repeat(5-review.rating)}
-                </span>
-                <span className="vr-carousel-count">
-                  {String(index + 1).padStart(2, '0')} / {String(reviews.length).padStart(2, '0')}
-                </span>
-              </div>
+            <div className="vr-carousel">
+              {reviews.map((review, index) => (
+                <article
+                  className="vr-carousel-card"
+                  key={review.id || review.name + index}
+                  style={{ "--review-index": index }}
+                >
+                  <div className="vr-carousel-top">
+                    <span className="vr-card-stars">
+                      {'★'.repeat(review.rating)}
+                      {'☆'.repeat(5 - review.rating)}
+                    </span>
 
-              <div className="vr-carousel-content">
-                <span className="vr-carousel-quote-mark">“</span>
-                <p>{review.text || review.message}</p>
-              </div>
+                    <span className="vr-carousel-count">
+                      {String(index + 1).padStart(2, '0')} /{' '}
+                      {String(reviews.length).padStart(2, '0')}
+                    </span>
+                  </div>
 
-              <div className="vr-author">
-                <span className="vr-avatar">{review.name.charAt(0)}</span>
-                <div>
-                  <strong>{review.name}</strong>
-                  <small>Customer experience</small>
-                </div>
-              </div>
-            </article>
-          ))}
-        </div>
+                  <div className="vr-carousel-content">
+                    <span className="vr-carousel-quote-mark">“</span>
+                    <p>{review.text}</p>
+                  </div>
+
+                  <div className="vr-author">
+                    <span className="vr-avatar">
+                      {review.name.charAt(0).toUpperCase()}
+                    </span>
+                    <div>
+                      <strong>{review.name}</strong>
+                      <small>Customer experience</small>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </>
+        ) : (
+          <div className="vr-empty-state">
+            <h3>Be the first to share your experience.</h3>
+            <p>
+              No customer reviews have been published yet.
+              Your feedback can help others discover VÉLLON.
+            </p>
+          </div>
+        )}
       </div>
 
       <div className="vr-form-section" id="vellon-leave-review">
         <div className="vr-form-intro">
           <span className="vr-eyebrow">HAVE YOUR SAY</span>
           <h3>Leave your rating.</h3>
-          <p>Have you used VÉLLON Career Studio? Tell us what you think. Your feedback matters.</p>
-          <div className="vr-form-promise">Your review appears in the testimonials immediately after submission.</div>
+          <p>
+            Have you used VÉLLON Career Studio?
+            Tell us what you think. Your feedback matters.
+          </p>
+          <div className="vr-form-promise">
+            Your review appears in the testimonials immediately after submission.
+          </div>
         </div>
 
         <form className="vr-form" onSubmit={submitReview}>
           <label className="vr-field-label">Your rating</label>
+
           <div className="vr-rating-picker">
-            {[1,2,3,4,5].map(star => (
+            {[1, 2, 3, 4, 5].map(star => (
               <button
                 type="button"
                 key={star}
-                className={star <= rating ? "vr-star active" : "vr-star"}
+                className={
+                  star <= rating ? 'vr-star active' : 'vr-star'
+                }
                 aria-label={`${star} stars`}
                 aria-pressed={rating === star}
                 onClick={() => setRating(star)}
-              >★</button>
+              >
+                ★
+              </button>
             ))}
             <span>{rating}/5</span>
           </div>
 
-          <label className="vr-field-label" htmlFor="vr-review-name">Your name</label>
+          <label
+            className="vr-field-label"
+            htmlFor="vr-review-name"
+          >
+            Your name
+          </label>
+
           <input
             id="vr-review-name"
             className="vr-input"
@@ -647,7 +751,13 @@ function ReputationSection() {
             required
           />
 
-          <label className="vr-field-label" htmlFor="vr-review-message">Your experience</label>
+          <label
+            className="vr-field-label"
+            htmlFor="vr-review-message"
+          >
+            Your experience
+          </label>
+
           <textarea
             id="vr-review-message"
             className="vr-input vr-textarea"
@@ -662,11 +772,19 @@ function ReputationSection() {
           <button type="submit" className="vr-submit">
             SUBMIT YOUR REVIEW <span>→</span>
           </button>
-          <p className="vr-privacy">Prototype: submissions are saved only in this browser's local storage. They are not sent to VÉLLON.</p>
-          {feedback && <p className="vr-feedback" role="status">{feedback}</p>}
+
+          <p className="vr-privacy">
+            Reviews are currently stored in this browser only.
+            They are not yet shared across devices.
+          </p>
+
+          {feedback && (
+            <p className="vr-feedback" role="status">
+              {feedback}
+            </p>
+          )}
         </form>
       </div>
-
     </section>
   )
 }
